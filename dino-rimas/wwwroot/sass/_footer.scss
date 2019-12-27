@@ -1,0 +1,30 @@
+.footer{
+    background-color: $clr_3;
+    color: $clr_1;
+    max-width: 1920px;
+    box-shadow: 0 0 20px 0 #000;
+    margin: auto;
+    z-index: 500;
+    padding: 25px 0;
+    .row{
+        min-height: 15vh;
+    }    
+    &-logo{
+        width: 150px;
+    }
+    &-contacts{
+        padding: 2px 0;
+        a{
+            text-decoration: none;
+            color: $clr_1;
+            &:hover{
+                color: $clr_4;
+            }
+        }
+    }
+    &-tittle{
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+}

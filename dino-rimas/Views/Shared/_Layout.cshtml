@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - dino-rimas</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="~/css/site.css?v=001" />
+</head>
+<body>
+    <header class="header"></header>
+    <div class="body">
+        <nav class="nav">
+            <div class="container">
+                <div class="row justify-content-center align-items-center">
+                    <div class="nav-button">
+                        <a asp-controller="DinoShop" asp-action="Index" class=@IsActive("Shop")>Список динозавров</a>
+                    </div>
+                    <div class="nav-button">
+                        <a asp-controller="Info" asp-action="Regulations" class=@IsActive("Regulations")>Правила сервера</a>
+                    </div>
+                    <div class="nav-button">
+                        <a asp-controller="Info" asp-action="Help" class=@IsActive("Help")>Помощь</a>
+                    </div>
+                    <div class="nav-button">
+                        <a asp-controller="User" asp-action="Cabinet" class=@IsActive("Lk")>Личный кабинет</a>
+                    </div>
+                    <div class="nav-button">
+                        <a asp-controller="Info" asp-action="Contacts" class=@IsActive("Contacts")>Контакты</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            @RenderBody()
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row justify-content-around align-items-center">
+                <div> <img class="footer-logo" src="~/img/logo.png" alt="logo" /> </div>
+                <div>&copy; 2019 - DinoRimas</div>
+                <div>
+                    <p class="footer-tittle">Контакты:</p>
+                    @foreach (var item in  Program.Settings.Contacts)
+                    {
+                        <div class="footer-contacts"><a href="@item[1]">@item[0]</a></div>
+                    }
+                </div>
+                <div>
+                    <p class="footer-tittle">Ссылки:</p>
+                    <div class="footer-contacts">
+                        <a asp-controller="DinoShop" asp-action="Index">Список динозавров</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="Info" asp-action="Regulations">Правила сервера</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="Info" asp-action="Help">Помощь</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="User" asp-action="Cabinet">Личный кабинет</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="Info" asp-action="Contacts">Контакты</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+
+    <!-- Visual Studio Browser Link -->
+    <script type="application/json" id="__browserLink_initializationData">
+        {"requestId":"a717d5a07c1741949a7cefd6fa2bad08","requestMappingFromServer":false}
+    </script>
+    <script type="text/javascript" src="http://localhost:54139/b6e36e429d034f578ebccd6a79bf19bf/browserLink" async="async"></script>
+    <!-- End Browser Link -->
+    <!-- VK Widget -->
+    <script type="text/javascript" src="https://vk.com/js/api/openapi.js?162"></script>
+    <div id="vk_community_messages"></div>
+    <script type="text/javascript">
+        VK.Widgets.CommunityMessages("vk_community_messages", 175893393, { expandTimeout: "30000", tooltipButtonText: "Есть вопрос?" });
+    </script>
+    <!-- END VK Widget -->
+
+</body>
+</html>
+@functions  {
+    string IsActive(string page)
+    {
+        return ViewData["Page"] == page ? "nav-active" : "";
+    }
+
+    UserModel UserInfo()
+    {
+        return (ViewData["User"] as UserModel);
+    }
+
+}
+

@@ -1,0 +1,146 @@
+.filter{
+    margin: 0;
+    height: 50px;
+    background-color: rgba($clr_2, .7);
+    box-shadow: 2vh 2vh 4vh 1px $clr_2;
+    &-btn{
+        color: $clr_1;
+        text-decoration: none;
+        cursor: pointer;
+        &:hover{
+            color: $clr_4;
+        }
+    }
+    &-input{        
+        background-color: rgba($clr_2, .7);
+        box-shadow: 2vh 2vh 4vh 1px $clr_2;
+        border: 1px solid $clr_1;
+        color: $clr_1;
+        padding: 5px;
+        font-weight: bold;
+        outline: none;
+        font-size: 1.1rem;
+    }
+}
+.shop{
+    margin: 5vh 0;
+    width: 100%;
+    &-item{
+        width: 180px;
+        height: 250px;
+        color: $clr_1;
+        text-align: center;
+        position: relative;
+        border-radius: 5px;
+        position: relative;
+        margin-left: 15px;
+        &-body{
+            border: 1px solid $clr_3;
+            background-color: rgba($clr_2, .7);
+            box-shadow: 2vh 2vh 4vh 1px $clr_2;
+            padding: 2vh;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            width: 100%;
+            backface-visibility: hidden;
+            transition: all .5s;
+            perspective: 30px;
+            cursor: pointer;
+        }
+        &-face{           
+            transform: rotateY(0);            
+        }
+        &-back{
+            transform: rotateY(-180deg);
+        }
+        &:hover .shop-item-face{                
+                transform: rotateY(180deg);
+            }
+        &:hover .shop-item-back{              
+            transform: rotateY(0);
+            }
+        &-img{
+            width: 90%;
+        }
+        &-name{
+            margin-top: 2vh;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        &-desc{
+            margin-top: 1vh;
+            font-size: .8rem;
+        }
+        &-price{
+            margin-top: 2vh;
+            color: $clr_4;
+        }
+        // &:hover{
+        //     cursor: pointer;
+        //     transform: scale(1.05) translate(-5px );
+        // }
+    }
+    &-hidden{
+        display: none;
+    }
+}
+.sidebar{   
+    width: 100%;
+    height: 100%;
+    .widget{        
+        width: 100%;        
+        background-color: rgba($clr_2, .7);
+        box-shadow: 2vh 2vh 4vh 1px $clr_2;
+        border-radius: 5px;
+        border: 1px solid $clr_3;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+    .user{
+        text-align: center;
+        color: $clr_1;
+        padding: 4vh 0;
+        &-img{
+            width: 50%;
+        }
+        &-name{
+            margin-top: 10px;
+        }
+        &-id{
+            margin-top: 8px;
+            &:hover{
+                text-shadow: 0 0 4px $clr_1;
+                cursor: pointer;
+            }
+        }
+        &-noAuth{
+            margin: 30px auto;
+            text-transform: uppercase;
+        }
+        &-balance{
+            margin: 10px auto 15px;
+            color: $clr_4;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    }
+    
+    .donate{
+        padding: 5px;
+        margin: 0 0 10px;
+        text-align: center;
+        div{
+            margin: 15px 0;
+        }
+        input{
+            outline: none;
+            background-color: rgba($clr_2, .5);
+            border-radius: 5px;
+            border: 1px solid $clr_3;
+            padding: 5px;
+            color: $clr_1;
+        }
+    }
+}

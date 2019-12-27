@@ -1,0 +1,16 @@
+﻿@model List<string[]>;
+@{
+    ViewData["Title"] = "Контакты";
+    ViewData["Page"] = "Contacts";
+}
+<div class="info contacts">
+    <h2 class="info-tittle">Наши контакты</h2>
+    <div class="info-body">
+        Все интересующие вопросы вы можете задать администрации в нашем дискорде, группе VK или отправить на нам на почту. Ниже приведены ссылки на наши ресурсы:
+        @foreach (var item in Model)
+        {
+            <p class="info-contacts button"><a href="@item[1]">@item[0]</a></p>
+        }
+
+    </div>
+</div>

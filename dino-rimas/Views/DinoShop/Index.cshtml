@@ -1,0 +1,91 @@
+﻿@model List<DinoShopModel>;
+
+@{
+    ViewData["Title"] = "Каталог";
+    ViewData["Page"] = "Shop";
+}
+
+<div class="modal" id="modal">
+    <span class="modal-dialog" >
+        <div class="modal-tittle"></div>
+        <div class="modal-body"></div>
+        <button class="modal-button-1 button" onclick="goToAction()">Купить</button>
+        <button class="modal-button-2 button" onclick="hideModal()">Отмена</button>
+    </span>
+</div>
+
+<div class="row">
+    <div class="col-xl-9">
+        <div class="filter row justify-content-around align-items-xl-center">
+            <p class="filter-btn" onclick="showItem('shop-item')">Все</p>
+            <p class="filter-btn" onclick="showItem('survival')">Survival</p>
+            <p class="filter-btn" onclick="showItem('progression')">Progression</p>
+            <input type="search" value="" placeholder="Поиск" class="filter-input" oninput="filterDino(this)" />
+        </div>
+
+        <div class="row shop justify-content-start">
+            @foreach (var item in Model)
+            {
+                <div class="shop-item mb-5 @GetDinoClass(item.Survival)"  onclick="showModal(@item.Id, '@item?.Name','@UserInfo()?.Balance', @item?.Price, '@ViewData.ContainsKey("User")')">
+                    <div class="shop-item-face shop-item-body">
+                        <img src="~/img/Dinos/@item.Img" alt="item" class="shop-item-img">
+                        <p class="shop-item-name">@item.Name</p>
+                        <p class="shop-item-price">@item.Price DC</p>
+                    </div>
+                    <div class="shop-item-back shop-item-body">
+                        <p class="shop-item-desc">@item.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-xl-3">
+        <div class="sidebar">
+            @if (ViewData.ContainsKey("User"))
+            {
+                <div class="user widget">
+                    <img src="@UserInfo().ProfileImg" alt="Steam" class="user-img" />
+                    <p class="user-name">@UserInfo().ProfileName </p>
+                    <p class="user-id">Id: <span id="steamid" title="Скопировать" onclick="copyIdToBufer(this)">@UserInfo().Steamid</span> </p>
+                    <p class="user-balance"> @UserInfo().Balance DC </p>
+                    <a asp-controller="User" asp-action="SignOut" class="button">Выйти</a>
+                </div>
+            }
+            else
+            {
+                <div class="user widget">
+                    <img src="~/img/steam.png" alt="Steam" class="user-img" />
+                    <p class="user-noAuth">Вы не авторизированы</p>
+                    <a asp-controller="User" asp-action="SignIn" class="button">Авторизироваться</a>
+                </div>
+            }
+            <form class="widget donate" asp-controller="User" asp-action="Donate" method="get">
+                <div><button class="button">Поддержать проект</button></div>
+            </form>
+
+            <!-- VK Widget -->
+            <script type="text/javascript" src="https://vk.com/js/api/openapi.js?162"></script>
+            <div id="vk_groups" class="widget"></div>
+            <script type="text/javascript">
+                VK.Widgets.Group("vk_groups", { mode: 3,  height: '350', width: '250'}, 175893393);
+            </script>
+            <!-- END VK Widget -->
+            <iframe src="https://discordapp.com/widget?id=527808271822880768&theme=dark" width="100%" height="350" allowtransparency="true" frameborder="0" class="widget"></iframe>
+        </div>
+    </div>
+</div>
+<script src="~/js/shop.js"></script>
+
+
+
+@functions  {
+
+    UserModel UserInfo()
+    {
+        return (ViewData["User"] as UserModel);
+    }
+     string GetDinoClass(bool type)
+    {
+        return type ? "survival" : "progression";
+    }
+}

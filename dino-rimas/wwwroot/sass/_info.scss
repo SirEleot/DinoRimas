@@ -1,0 +1,100 @@
+.info{
+    color: $clr_1;    
+    border: 1px solid $clr_3;
+    background-color: rgba($clr_2, .7);
+    box-shadow:0 0 4vh 1px $clr_2;
+    border-radius: 5px;
+    margin-top: 8vh;
+    &-tittle{
+        text-align: center;
+        background-color: $clr_3;
+        padding: 2vh;
+    }
+    &-body{
+        padding: 5px 10% 9%;
+    }
+    h3{
+        margin-top: 5vh;
+    }
+    .reg{
+        &-text{
+            padding: 5px;
+            padding-right: 80px;
+            margin-left: 15px;
+            position: relative;
+            &-sub{
+                margin-left: 30px;
+                margin-top: 5px;
+            } 
+            &-sub2{
+                margin-left: 60px;
+                margin-top: 5px;
+            }
+            &-sub3{
+                margin-left: 30px;
+                margin-top: 5px;
+                list-style: none;
+            }    
+        }
+        &-time{
+            position: absolute;
+            right: 0;
+        }
+    }
+    &-success{
+        max-width: 50%;        
+        margin: auto;
+        color: $clr_4;
+        text-align: center;
+        h3{
+            color: rgb(5, 255, 5);
+            text-shadow: 0 0 1px rgb(0, 255, 0);
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+        img{
+            width: 150px;
+            height: 150px;
+            text-align: center;
+            margin-top: 25px;
+        }
+    }
+    &-error{
+        max-width: 50%;        
+        margin: auto;
+        color: $clr_4;
+        text-align: center;        
+        h3{
+            color: $clr_3;
+            text-shadow: 0 0 1px $clr_3;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+        img{
+            width: 100px;
+            height: 100px;
+            margin-top: 25px;
+        }
+    }
+    
+    &-contacts{
+        margin-top: 15px;
+        text-align: center;
+        a{
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: $clr_4;
+        }
+        &:hover a{
+            color: $clr_3;
+        }
+    }
+    &-link{
+        text-decoration: none;
+        color: $clr_4;
+    }
+}

@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Помощь серверу";
+}
+
+<div class="donate row justify-content-center">
+    <div class="donate-dialog">
+        <div class="donate-tittle">Здесь вы можете оказать помощь проекту</div>
+        <form class="donate-body" action="https://unitpay.ru/pay/@Program.Settings.UnitPay.PublickKey">
+            <div>Введите ваш StemId:</div>
+            <div><input type="text" name="account" value="@ViewData["Account"]" placeholder="введите steamid" class="donate-input" preg="^\d+$" maxlength="17" minlength="17" /></div>
+            <div>Введите сумму:</div>
+            <div><input type="number" name="sum" value="500" class="donate-input" /> </div>
+            <div> <button class="button" />Перейти к оплате</div>
+            <input type="hidden" name="desc" value="Dino Coin" />
+        </form>
+    </div>
+</div>
+<div class="donate-info">
+    <h3>Внимание!!!</h3>
+    На этой странице вы можете поддержать проект материально. Хотим обратить Ваше внимание на то, что <strong> все платежи являются добровольными и возврату не подлежат</strong>.
+    В благодарность вам будут начислены очки лояльности в форме виртуальных монет <strong>Dino Coin</strong> (<strong>1 RUB</strong> = <strong>1 DC</strong>),
+    за которые вы сможете приобрести приятные бонусы в <a asp-controller="DinoShop" asp-action="Index">бонусном магазине</a>.
+    Все интересующие вопросы можно задать любым из доступных средств на странице с  <a asp-controller="Info" asp-action="Contacts">Контактами</a>
+
+</div>
+<script src="~/js/Donate.js"></script>

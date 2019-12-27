@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - dino-rimas</title>
+    <link rel="stylesheet" href="http://localhost/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="http://localhost/css/site.css?v=001" />
+</head>
+<body>
+    <div class="body">
+        <nav class="nav">
+            <div class="container">
+                <div class="row justify-content-center align-items-center">
+                   
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+
+            <div id="app"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row justify-content-around align-items-center">
+                <div> <img class="footer-logo" src="../../wwwroot/img/logo.png" alt="logo" /> </div>
+                <div>&copy; 2019 - DinoRimas</div>
+                <div>                   
+                </div>
+                <div>
+                    <p class="footer-tittle">Ссылки:</p>
+                    <div class="footer-contacts">
+                        <a asp-controller="DinoShop" asp-action="Index">Список динозавров</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="Info" asp-action="Regulations">Правила сервера</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="Info" asp-action="Help">Помощь</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="User" asp-action="Cabinet">Личный кабинет</a>
+                    </div>
+                    <div class="footer-contacts">
+                        <a asp-controller="Info" asp-action="Contacts">Контакты</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="../../wwwroot/lib/jquery/dist/jquery.min.js"></script>
+    <script src="../../wwwroot/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
