@@ -13,7 +13,6 @@ namespace DinoRimas
 {
     public class Program
     {
-        public static SettingsModel Settings { get; set; }
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

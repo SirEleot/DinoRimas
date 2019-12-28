@@ -19,28 +19,30 @@ namespace DinoRimas.Controllers.Api
     public class DonateController : Controller
     {
         private readonly DinoRimasDbContext _context;
-        public DonateController(DinoRimasDbContext context, IWebHostEnvironment env)
+        private readonly SettingsModel _settings;
+        public DonateController(DinoRimasDbContext context, IOptions<SettingsModel> settings)
         {
             _context = context;
+            _settings = settings.Value;
         }
 
         [HttpGet("Validate")]
         public IActionResult ValidatePayment()
         { 
-            if (Program.Settings.UnitPay.IpList.Contains(HttpContext.Connection.RemoteIpAddress.ToString()))
+            if (_settings.UnitPay.IpList.Contains(HttpContext.Connection.RemoteIpAddress.ToString()))
             {
                 var query = HttpContext.Request.Query;
-                //if(query["params[test]"] == "1") return Ok(new UnitPayOk("Тестовый запрос получен").ToString());
+                //if(query["params[test]"] == "1") return Ok(new UnitPayOk("Тестовый запрос получен"));
                 switch (query["method"])
                 {
-                    case "check": return Ok(new UnitPayOk("Сервер готов").ToString());
+                    case "check": return Ok(new UnitPayOk("Сервер готов"));
                     case "pay":
                         var remoteSign = query["params[signature]"];
                         var localSign = GetSign(query);
                         if(remoteSign == localSign)
                         {
                             var u = UnitPayLogsModel.Create(query, false);
-                            if (_context.UnitPayLogs.Any(up=>up.UId == u.UId && up.Compleeted == true)) return Ok(new UnitPayOk("Платеж с таким ИД уже существует").ToString());
+                            if (_context.UnitPayLogs.Any(up=>up.UId == u.UId && up.Compleeted == true)) return Ok(new UnitPayOk("Платеж с таким ИД уже существует"));
                             var user = _context.User.Where(usr => usr.Steamid == u.SteamId).SingleOrDefault();
                             if(user == null)
                             {
@@ -57,8 +59,8 @@ namespace DinoRimas.Controllers.Api
 
                             _context.UnitPayLogs.Add(u);
                             _context.SaveChanges();
-                            return Ok(new UnitPayOk("Платеж успешно обработан").ToString());
-                        }else return Ok(new UnitPayError("Не прошел проверку, пожалуйста сообщите администратору").ToString());
+                            return Ok(new UnitPayOk("Платеж успешно обработан"));
+                        }else return Ok(new UnitPayError("Не прошел проверку, пожалуйста сообщите администратору"));
                         
                     case "error":
                         {
@@ -67,19 +69,19 @@ namespace DinoRimas.Controllers.Api
                             _context.SaveChanges();
                             return Ok(new UnitPayOk("Сообщение об ошибке получено"));
                         }
-                    default: return Ok(new UnitPayError("Неизвестный метод запроса, пожалуйста сообщите администратору").ToString());
+                    default: return Ok(new UnitPayError("Неизвестный метод запроса, пожалуйста сообщите администратору"));
                 }
             }
             else
             {
-                return Ok(new UnitPayError("Доступ запрещен, пожалуйста сообщите администратору").ToString());
+                return Ok(new UnitPayError("Доступ запрещен, пожалуйста сообщите администратору"));
             }
         }
 
         private string GetSign(IQueryCollection q)
         {
             var key = q.Where( k=> k.Key != "params[sign]" && k.Key != "params[signature]").OrderBy(s=>s.Key).Aggregate("", (s,i) => s += i.Value + "{up}");            
-            key += Program.Settings.UnitPay.PrivateKey;
+            key += _settings.UnitPay.PrivateKey;
             //throw new Exception(key);
             using var sha = SHA256.Create();
             byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(key));

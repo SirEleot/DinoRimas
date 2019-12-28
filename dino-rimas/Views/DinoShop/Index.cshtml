@@ -1,4 +1,4 @@
-﻿@model List<DinoShopModel>;
+﻿@model Tuple<UserModel, List<DinoShopModel>>;
 
 @{
     ViewData["Title"] = "Каталог";
@@ -24,9 +24,9 @@
         </div>
 
         <div class="row shop justify-content-start">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Item2)
             {
-                <div class="shop-item mb-5 @GetDinoClass(item.Survival)"  onclick="showModal(@item.Id, '@item?.Name','@UserInfo()?.Balance', @item?.Price, '@ViewData.ContainsKey("User")')">
+                <div class="shop-item mb-5 @GetDinoClass(item.Survival)"  onclick="showModal(@item.Id, '@item?.Name','@Model.Item1?.Balance', @item?.Price, '@(Model.Item1 != null)')">
                     <div class="shop-item-face shop-item-body">
                         <img src="~/img/Dinos/@item.Img" alt="item" class="shop-item-img">
                         <p class="shop-item-name">@item.Name</p>
@@ -41,13 +41,13 @@
     </div>
     <div class="col-xl-3">
         <div class="sidebar">
-            @if (ViewData.ContainsKey("User"))
+            @if (Model.Item1 != null)
             {
                 <div class="user widget">
-                    <img src="@UserInfo().ProfileImg" alt="Steam" class="user-img" />
-                    <p class="user-name">@UserInfo().ProfileName </p>
-                    <p class="user-id">Id: <span id="steamid" title="Скопировать" onclick="copyIdToBufer(this)">@UserInfo().Steamid</span> </p>
-                    <p class="user-balance"> @UserInfo().Balance DC </p>
+                    <img src="@Model.Item1.ProfileImg" alt="Steam" class="user-img" />
+                    <p class="user-name">@Model.Item1.ProfileName </p>
+                    <p class="user-id">Id: <span id="steamid" title="Скопировать" onclick="copyIdToBufer(this)">@Model.Item1.Steamid</span> </p>
+                    <p class="user-balance"> @Model.Item1.Balance DC </p>
                     <a asp-controller="User" asp-action="SignOut" class="button">Выйти</a>
                 </div>
             }
@@ -79,12 +79,7 @@
 
 
 @functions  {
-
-    UserModel UserInfo()
-    {
-        return (ViewData["User"] as UserModel);
-    }
-     string GetDinoClass(bool type)
+    string GetDinoClass(bool type)
     {
         return type ? "survival" : "progression";
     }

@@ -4,16 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using DinoRimas.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using AspNet.Security.OpenId;
 using DinoRimas.Extensions;
 using DinoRimas.Models;
 
@@ -24,7 +21,6 @@ namespace DinoRimas
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Program.Settings = configuration.GetSection("Settings").Get<SettingsModel>();            
         }
 
         public IConfiguration Configuration { get; }
@@ -32,9 +28,9 @@ namespace DinoRimas
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
-            services.AddDbContext<DinoRimasDbContext>();
+            services.AddControllersWithViews().AddJsonOptions(options=> {
+                options.JsonSerializerOptions.MaxDepth = 620;
+            });            
 
             services.AddAuthentication(options =>
             {
@@ -47,18 +43,23 @@ namespace DinoRimas
                 })
                 .AddSteam();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.Configure<SettingsModel>(Configuration.GetSection("Settings"));
+            services.AddDbContext<DinoRimasDbContext>(options =>options.UseNpgsql(Configuration.GetConnectionString("NpgSQL")));
+            services.AddUser();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DinoRimasDbContext context)
         {
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage(); 
                 app.UseBrowserLink();
-                ReloadDB();
+                ReloadDB(context, true);
             }
             else {            
                 app.UseExceptionHandler("/Home/Error");
@@ -81,10 +82,9 @@ namespace DinoRimas
             });
         }
 
-        private void ReloadDB()
+        private void ReloadDB(DinoRimasDbContext context, bool deleteOld)
         {
-            using var context = new DinoRimasDbContext();
-            context.Database.EnsureDeleted();
+            if(deleteOld) context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
         }
     }

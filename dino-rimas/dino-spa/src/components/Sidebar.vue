@@ -2,11 +2,11 @@
     <div class="lk-sidebar">
          <div class="lk-menu">
              <div class="lk-img">                 
-                <img :src="user.ProfileImg" alt="logo">
+                <img :src="user.profileImg" alt="logo">
              </div>
-             <div class="lk-info">{{ user.ProfileName }}</div>
-             <div class="lk-info">{{ user.Steamid }}</div>
-             <div class="lk-balance">{{ user.Balance }} DC</div>
+             <div class="lk-info">{{ user.profileName }}</div>
+             <div class="lk-info">{{ user.steamid }}</div>
+             <div class="lk-balance">{{ user.balance }} DC</div>
             <div class="button">Пополнить баланс</div>
             <div class="button">Выход</div>
          </div>

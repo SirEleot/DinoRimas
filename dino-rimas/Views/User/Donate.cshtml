@@ -1,11 +1,12 @@
-﻿@{
+﻿@inject SettingsModel Settings;
+@{
     ViewData["Title"] = "Помощь серверу";
 }
 
 <div class="donate row justify-content-center">
     <div class="donate-dialog">
         <div class="donate-tittle">Здесь вы можете оказать помощь проекту</div>
-        <form class="donate-body" action="https://unitpay.ru/pay/@Program.Settings.UnitPay.PublickKey">
+        <form class="donate-body" action="https://unitpay.ru/pay/@Settings.UnitPay.PublickKey">
             <div>Введите ваш StemId:</div>
             <div><input type="text" name="account" value="@ViewData["Account"]" placeholder="введите steamid" class="donate-input" preg="^\d+$" maxlength="17" minlength="17" /></div>
             <div>Введите сумму:</div>

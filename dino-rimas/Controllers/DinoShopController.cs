@@ -5,34 +5,39 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DinoRimas.Data;
-using DinoRimas.Extensions;
 using DinoRimas.Models;
 using System.IO;
 using Newtonsoft.Json;
 using System.Text;
+using DinoRimas.Services;
+using Microsoft.Extensions.Options;
+using DinoRimas.Extensions;
 
 namespace DinoRimas.Controllers
 {
     public class DinoShopController : Controller
     {
         private readonly DinoRimasDbContext _context;
+        private readonly UserService _user;
+        private readonly SettingsModel _settings;
 
-        public DinoShopController(DinoRimasDbContext context)
+        public DinoShopController(DinoRimasDbContext context, UserService user, IOptions<SettingsModel> settings)
         {
             _context = context;
+            _user = user;
+            _settings = settings.Value;
         }
 
         // GET: ShopItems
         public async Task<IActionResult> Index()
         {
-            var user = await User.GetDinoUserAsync();
-            if (user != null) ViewData["User"] = user;
-            return View(await _context.ShopDinoList.ToListAsync());
+            Tuple<UserModel, List<DinoShopModel>> model = new Tuple<UserModel, List<DinoShopModel>>(await _user.GetDinoUserAsync(), await _context.ShopDinoList.ToListAsync());
+            return View(model);
         }
 
         public async Task<IActionResult> BuyDino(int id)
         {
-            var user = await User.GetDinoUserAsync();
+            var user = await _user.GetDinoUserAsync();
             if (user == null) return View("Message", new MessageViewModel(
                 "Ошибка",
                 "Приносим свои извинения!",
@@ -40,7 +45,7 @@ namespace DinoRimas.Controllers
                 "error"
                 ));
 
-            if(user.Inventory.Count >= user.Slots) return View("Message", new MessageViewModel(
+            if(user.Inventory?.Count >= user.Slots) return View("Message", new MessageViewModel(
                "Ошибка",
                "Невозможно завершить операцию!",
                "У вас не хватает слотов для динозавров в инвентаре. Удалите какого-нибудь динозавра или приобретите дополнительный слот.",
@@ -64,9 +69,9 @@ namespace DinoRimas.Controllers
 
             user.Balance -= dino.Price;
             if (user.Inventory == null) user.Inventory = new List<DinoModel>();
-            user.Inventory.Add(CreateNewDino(user, dino));
+            user.Inventory.Add(_user.CreateNewDino(user, dino));
             _context.User.Update(user);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             
             return View("Message", new MessageViewModel(
                 "Поздравляем",
@@ -75,8 +80,11 @@ namespace DinoRimas.Controllers
                 "success"
                 ));
         }
-        public IActionResult UpdateDinoList()
+        public async Task<IActionResult> UpdateDinoList()
         {
+            var user = await _user.GetDinoUserAsync();
+            if (user == null || !user.IsAdmin) return Redirect("/");
+
             var folder = "ShopDinoList";
             var files = Directory.GetFiles(folder);
             var dinos = new List<DinoShopModel>();
@@ -92,29 +100,13 @@ namespace DinoRimas.Controllers
                     _context.ShopDinoList.Add(dino);
                 }
             }
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return View("Message", new MessageViewModel(
               "Поздравляем",
               "Список динозавров обновлен",
               "",
               "success"
               ));
-
-        }
-
-        private DinoModel CreateNewDino(UserModel user, DinoShopModel dinoShop)
-        {
-            var dino = new DinoModel
-            {
-                Name = dinoShop.Name,
-                IsActivated = false,
-                IsAlive = true,
-                Config = dinoShop.BaseConfig,
-                Owner = user,
-                CraetionAs = DateTime.Now
-            };
-            _context.Dinos.Add(dino);
-            return dino;
         }
     }
 }

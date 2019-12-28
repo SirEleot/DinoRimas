@@ -13,13 +13,13 @@ export default {
   name: 'app',
   data() {
     return {      
-      user:{
-        Id: 0,
-        Steamid: "",
-        ProfileName: "",
-        ProfileImg: "",
-        Balance: 0,
-        Inventory: null
+      user: {
+        id: 0,
+        steamid: "",
+        profileName: "",
+        profileImg: "",
+        balance: 0,
+        inventory: null
       }
     }
   },
@@ -39,7 +39,7 @@ export default {
     Sidebar,
     Body
   },
-  mounted(){
+  created(){
     if(this.isDev()){
       this.user = {
         Id: 1,

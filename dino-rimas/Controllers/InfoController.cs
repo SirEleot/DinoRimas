@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using DinoRimas.Models;
-using DinoRimas.Data;
+using Microsoft.Extensions.Options;
 
 namespace DinoRimas.Controllers
 {
     public class InfoController :Controller
     {
-        private readonly ILogger<InfoController> _logger;
-        private readonly DinoRimasDbContext _context;
+        private readonly SettingsModel _settings;
 
-        public InfoController(ILogger<InfoController> logger, DinoRimasDbContext context)
+        public InfoController(IOptions<SettingsModel> settings)
         {
-            _logger = logger;
-            _context = context;
+            _settings = settings.Value;
         }
 
         public IActionResult Regulations()
@@ -31,7 +23,7 @@ namespace DinoRimas.Controllers
         }
         public IActionResult Contacts()
         {
-            return View(Program.Settings.Contacts);
+            return View(_settings.Contacts);
         }
         public IActionResult SuccessPay()
         {

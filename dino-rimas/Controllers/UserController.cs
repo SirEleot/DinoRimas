@@ -8,22 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DinoRimas.Data;
-using DinoRimas.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using DinoRimas.Extensions;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Options;
+using DinoRimas.Services;
 
 namespace DinoRimas.Controllers
 {
     public class UserController : Controller
     {
         private readonly DinoRimasDbContext _context;
+        private readonly UserService _user;
 
-        public UserController(DinoRimasDbContext context)
+        public UserController(DinoRimasDbContext context, UserService user)
         {
-            _context = context;       
+            _context = context;
+            _user = user;
         }
         // GET: Users
         public async Task<IActionResult> Cabinet()
@@ -47,7 +44,7 @@ namespace DinoRimas.Controllers
         }
         public async Task<IActionResult> Donate()
         {
-            var user = await User.GetDinoUserAsync();
+            var user = await _user.GetDinoUserAsync();
             ViewData["Account"] = user?.Steamid ?? "";
             return View();
         }

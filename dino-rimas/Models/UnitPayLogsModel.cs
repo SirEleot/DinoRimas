@@ -10,7 +10,6 @@ namespace DinoRimas.Models
     {
         public static UnitPayLogsModel Create(IQueryCollection q, bool error = false, string message = "")
         {
-
             //throw new Exception(q["params[orderSum]"].ToString());
             return new UnitPayLogsModel
             {
