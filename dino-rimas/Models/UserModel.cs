@@ -15,6 +15,7 @@ namespace DinoRimas.Models
         public string ProfileImg { get; set; }
         public int Balance { get; set; }
         public int Slots { get; set; }
+        [JsonIgnore]
         public bool IsAdmin
         {
             get

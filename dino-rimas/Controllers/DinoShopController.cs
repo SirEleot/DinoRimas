@@ -69,7 +69,7 @@ namespace DinoRimas.Controllers
 
             user.Balance -= dino.Price;
             if (user.Inventory == null) user.Inventory = new List<DinoModel>();
-            user.Inventory.Add(_user.CreateNewDino(user, dino));
+            user.Inventory.Add(_user.CreateNewDino(dino, false));
             _context.User.Update(user);
             _context.SaveChanges();
             
@@ -93,12 +93,11 @@ namespace DinoRimas.Controllers
                 using StreamReader r = new StreamReader(file, Encoding.UTF8);
                 dinos.Add(JsonConvert.DeserializeObject<DinoShopModel>(r.ReadToEnd()));
             }
+            _context.ShopDinoList.RemoveRange(_context.ShopDinoList);
             foreach (var dino in dinos)
             {
-                if(!_context.ShopDinoList.Any(d=>d.Name == dino.Name))
-                {
-                    _context.ShopDinoList.Add(dino);
-                }
+                dino.ClassName = dino.BaseConfig.CharacterClass;
+                _context.ShopDinoList.Add(dino);
             }
             await _context.SaveChangesAsync();
             return View("Message", new MessageViewModel(

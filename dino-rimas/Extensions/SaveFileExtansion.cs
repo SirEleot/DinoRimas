@@ -27,6 +27,12 @@ namespace DinoRimas.Extensions
             return File.Exists(path);
         }
 
+        public static void DeleteSaveFile(this SettingsModel settings, UserModel user)
+        {
+            var path = settings.GameSaveFolderPath + @"\" + user.Steamid + ".json";
+            if( File.Exists(path)) File.Delete(path);
+        }
+
         public static void AddSaveFile(this SettingsModel settings, UserModel user, DinoSaveModel save)
         {
             var path = settings.GameSaveFolderPath + @"\" + user.Steamid + ".json";

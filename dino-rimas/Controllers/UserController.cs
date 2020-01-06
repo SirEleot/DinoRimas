@@ -30,13 +30,17 @@ namespace DinoRimas.Controllers
         [HttpGet]
         public async Task<IActionResult> SignIn()
         {
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "Steam");
+            var props = new AuthenticationProperties { RedirectUri = "/", IsPersistent = true,  ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)};
+            //throw new Exception($"{props.AllowRefresh} | {props.Parameters} | {props.IsPersistent} | {props.Items}");
+            return Challenge(props, "Steam");
         }
-        [HttpPost]
-        public async Task<IActionResult> SignIn([FromForm] string provider)
-        {
-            return Challenge(new AuthenticationProperties());
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> SignIn([FromForm] string provider)
+        //{
+        //    var props = new AuthenticationProperties { ExpiresUtc = DateTime.UtcNow.AddDays(30) };
+        //    throw new Exception($"{props.ExpiresUtc}{props.Parameters}");
+        //    return Challenge(props);
+        //}
         public IActionResult SignOut()
         {          
             return SignOut(new AuthenticationProperties { RedirectUri = "/" },

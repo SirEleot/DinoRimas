@@ -1,11 +1,11 @@
 ﻿{
-  "Img": "TestImg.png",
-  "Name": "Админозавр",
+  "Img": "RexImg.png",
+  "Name": "Рекс",
   "Description": "Один из сильнейших вид хищников одаренный природой громадной силой, является вожаком и несет ответственность за свою стаю",
-  "Price": 10000,
+  "Price": 350,
   "Survival": true,
   "BaseConfig": {
-    "CharacterClass": "Spino",
+    "CharacterClass": "RexAdultS",
     "DNA": "",
     "Location_Isle_V3": "X=-459007.906 Y=-137412.406 Z=-72085.797",
     "Rotation_Isle_V3": "P=0.000000 Y=113.644325 R=0.000000",

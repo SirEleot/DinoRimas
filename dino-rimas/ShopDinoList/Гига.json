@@ -1,11 +1,11 @@
 ﻿{
-  "Img": "TestImg.png",
-  "Name": "Прогерозавр",
-  "Description": "Этот вид относится к семейству травоядных, отличительной чертой которгог является квартирный образ жизни и провождение времени за компьютером",
-  "Price": 10000,
+  "Img": "GigaImg.png",
+  "Name": "Гига",
+  "Description": "Один из сильнейших вид хищников одаренный природой громадной силой, является вожаком и несет ответственность за свою стаю",
+  "Price": 325,
   "Survival": true,
   "BaseConfig": {
-    "CharacterClass": "Spino",
+    "CharacterClass": "GigaAdultS",
     "DNA": "",
     "Location_Isle_V3": "X=-459007.906 Y=-137412.406 Z=-72085.797",
     "Rotation_Isle_V3": "P=0.000000 Y=113.644325 R=0.000000",
@@ -31,6 +31,5 @@
     "SkinPaletteSection5": 24,
     "SkinPaletteSection6": 254,
     "SkinPaletteVariation": "6.0"
-
   }
 }

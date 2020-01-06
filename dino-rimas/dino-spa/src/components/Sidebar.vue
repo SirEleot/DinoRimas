@@ -7,8 +7,8 @@
              <div class="lk-info">{{ user.profileName }}</div>
              <div class="lk-info">{{ user.steamid }}</div>
              <div class="lk-balance">{{ user.balance }} DC</div>
-            <div class="button">Пополнить баланс</div>
-            <div class="button">Выход</div>
+            <div class="button" @click="goTo('/User/Donate')">Пополнить баланс</div>
+            <div class="button"  @click="goTo('/User/SignOut')">Выход</div>
          </div>
     </div>
 </template>
@@ -16,6 +16,11 @@
 <script>
 export default {
     props:['user'],
+    methods: {
+        goTo(path){
+            window.location.href=path;
+        }
+    },
     data() {
         return {
             

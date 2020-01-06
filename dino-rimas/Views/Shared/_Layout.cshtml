@@ -8,11 +8,12 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
     <link rel="stylesheet" href="~/css/site.css?v=001" />
 </head>
-<body>
+<body id="body">
     <header class="header"></header>
     <div class="body">
         <nav class="nav">
             <div class="container">
+                <span id="navAncor"></span>
                 <div class="row justify-content-center align-items-center">
                     <div class="nav-button">
                         <a asp-controller="DinoShop" asp-action="Index" class=@IsActive("Shop")>Список динозавров</a>

@@ -35,50 +35,94 @@ namespace DinoRimas.Services
             User = accessor.HttpContext.User;
         }
 
+        public async Task<UserModel> GetDinoUserAsync()
+        {
+            return await Task.Run(() => GetDinoUser());
+        }
+
+        public DinoModel CreateNewDino(DinoShopModel dinoShop, bool active)
+        {
+            var dino = new DinoModel
+            {
+                Image = dinoShop.Img,
+                Name = dinoShop.Name,                
+                IsActivated = active,
+                IsAlive = true,
+                Vip = true,
+                Config = dinoShop.BaseConfig,
+                CraetionAs = DateTime.Now
+            };
+            return dino;
+        }
+
+        public DinoModel CreateNewDino(DinoSaveModel config, bool active)
+        {
+            var shop = _context.ShopDinoList.FirstOrDefault(s => s.ClassName == config.CharacterClass);
+            var name = config.CharacterClass;
+            var img = "DefaultDino.png";
+
+            if (shop != null)
+            {
+                name = shop.Name;
+                img = shop.Img;
+            }
+            var dino = new DinoModel
+            {
+                Name = name,
+                IsActivated = active,
+                IsAlive = true,
+                Vip = true,
+                Config = config,
+                Image = img,
+                CraetionAs = DateTime.Now
+            };
+            return dino;
+        }
+
+        public bool UserOnServer(string steamid)
+        {
+            var info = GetSteamInfo(steamid);
+            return (info.gameserverip != null &&  _settings.ServerIps.Any(ip=>ip == info.gameserverip));
+        }
+
         private UserModel GetDinoUser()
         {
             var steamid = User.Identity.IsAuthenticated ? (User.Claims.First().Value.Split('/').Last()) : null;
             if (steamid == null) return null;
 
             var dinoUser = _context.User.FirstOrDefault(u => u.Steamid == steamid);
-            if (dinoUser == null)
-            {
-                var info = GetSteamInfo(steamid);
-                dinoUser = new UserModel
-                {
-                    Steamid = steamid,
-                    ProfileName = info.personaname,
-                    ProfileImg = info.avatarfull,
-                    Balance = 100000,
-                    Slots = 2,
-                    Inventory = new List<DinoModel>()
-                };
-                var file = _settings.GetSaveFile(dinoUser);
-                if(file != null)
-                {
-                    var dino = new DinoModel
-                    {
-                        IsAlive = true,
-                        Vip = false,
-                        CraetionAs = DateTime.Now,
-                        Config = file,
-                        IsActivated = true,
-                        Name = file.CharacterClass
-                    };
-                    _context.User.Add(dinoUser);
-                    dinoUser.Inventory.Add(dino);
-                }
-                _context.User.Add(dinoUser);
-                _context.SaveChanges();
-            }
+            if (dinoUser == null) dinoUser = CreateNewUser(steamid);
             else
-            {                
+            {
                 dinoUser.Inventory = _context.Entry(dinoUser)
-                    .Collection(d => d.Inventory)             
+                    .Collection(d => d.Inventory)
                     .Query()
-                    .Where(d=>d.IsAlive)
+                    .Where(d => d.IsAlive)
                     .ToList();
             }
+            return dinoUser;
+        }
+
+        private UserModel CreateNewUser(string steamid)
+        {
+            var info = GetSteamInfo(steamid);
+            var dinoUser = new UserModel
+            {
+                Steamid = steamid,
+                ProfileName = info.personaname,
+                ProfileImg = info.avatarfull,
+                Balance = 100000,
+                Slots = 2,
+                Inventory = new List<DinoModel>()
+            };
+            var save = _settings.GetSaveFile(dinoUser);
+            if (save != null)
+            {
+                var dino = CreateNewDino(save, true);
+                dinoUser.Inventory.Add(dino);
+            }
+            _context.User.Add(dinoUser);
+            _context.SaveChanges();
             return dinoUser;
         }
 
@@ -91,46 +135,6 @@ namespace DinoRimas.Services
                 .Where(p => p.Name == "players")
                 .Select(p => p.Value);
             return p.First().ToObject<SteamInfo[]>().FirstOrDefault();
-        }
-
-        public async Task<UserModel> GetDinoUserAsync()
-        {
-            return await Task.Run(() => GetDinoUser());
-        }
-
-        public DinoModel CreateNewDino(UserModel user, DinoShopModel dinoShop)
-        {
-
-            var dino = new DinoModel
-            {
-                Name = dinoShop.Name,
-                IsActivated = false,
-                IsAlive = true,
-                Vip = true,
-                Config = dinoShop.BaseConfig,
-                CraetionAs = DateTime.Now
-            };
-            if (!user.Inventory.Any(d => d.IsActivated))
-            {
-                dino.IsActivated = true;
-                _settings.AddSaveFile(user, dino.Config);
-            }
-            return dino;
-        }
-
-        public DinoModel CreateNewDino(UserModel user, DinoSaveModel config, bool active = true)
-        {
-
-            var dino = new DinoModel
-            {
-                Name = config.CharacterClass,
-                IsActivated = active,
-                IsAlive = true,
-                Vip = true,
-                Config = config,
-                CraetionAs = DateTime.Now
-            };
-            return dino;
         }
 
     }
