@@ -7,13 +7,14 @@
 <div class="donate row justify-content-center">
     <div class="donate-dialog">
         <div class="donate-tittle">Здесь вы можете оказать помощь проекту</div>
-        <form class="donate-body" action="https://unitpay.ru/pay/@Settings.Value.UnitPay.PublickKey">
+        <form class="donate-body" action="https://unitpay.ru/pay/@Settings.Value.UnitPay.PublickKey" method="post">
             <div>Введите ваш StemId:</div>
             <div><input type="text" name="account" value="@ViewData["Account"]" placeholder="введите steamid" class="donate-input" preg="^\d+$" maxlength="17" minlength="17" /></div>
             <div>Введите сумму:</div>
             <div><input type="number" name="sum" value="500" class="donate-input" /> </div>
             <div> <button class="button" />Перейти к оплате</div>
             <input type="hidden" name="desc" value="Dino Coin" />
+            <input type="hidden" name="currency" value="RUB" />
         </form>
     </div>
 </div>

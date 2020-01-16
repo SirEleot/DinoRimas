@@ -13,8 +13,8 @@
             </div>
             <div class="lk-options-buttons">
                 <div class="lk-options-name" >{{options.name}}</div>
-                <div class="button" v-if="!options.active" @click="$emit('onAction', 'activate', options.id); options.enabled = false;">Активировать</div>                
-                <!-- <div class="button" v-else @click="$emit('onAction', 'activate', options.id, false)">Деактивировать</div> -->
+                <div class="button" v-if="!options.active" @click="$emit('onAction', 'activate', options.id); options.enabled = false;">Активировать</div> 
+                <div class="button" v-else-if="dis" @click="$emit('onAction', 'desactivate', options.id); options.enabled = false;">Деактивировать</div>
                 <div class="button" @click="$emit('onAction', 'sex', options.id); options.enabled = false;">Сделать самкой</div>
                 <div class="button" @click="$emit('onAction', 'delete', options.id); options.enabled = false;">Удалить</div>
                 <div class="button" @click="options.enabled = false">Назад</div>
@@ -29,13 +29,13 @@
 
             <div class="lk-inventory-item"
                 v-for="(dino, index) in inventory" :key="index"
-                :class="{'lk-inventory-activeted': dino && dino.isActivated}"
-                :title="dino ? dino.name + (dino.isActivated ? ' : активен' : ' : не активен') : ''"
+                :class="{'lk-inventory-activeted': dino && dino.active}"
+                :title="dino ? dino.name + (dino.active ? ' : активен' : ' : не активен') : ''"
                 @click="showOptions(dino)"
             >
                 <div v-if="dino">
                     <div class="lk-inventory-img">
-                        <img :src="`/img/Dinos/${dino.image}`" :alt="dino.name">
+                        <img :src="`/img/Dinos/${dino.characterClass.toLowerCase()}.png`" :alt="dino.name">
                     </div>               
                     <div class="lk-inventory-tittle">{{dino.name}}</div> 
                 </div>
@@ -51,7 +51,7 @@
 
 <script>
 export default {
-    props:['inventory', 'price'],
+    props:['inventory', 'price', 'dis'],
     data() {
         return {
             options:{
@@ -67,7 +67,7 @@ export default {
             if(!dino) return;
             this.options.id = dino.id;            
             this.options.name = dino.name;
-            this.options.active = dino.isActivated;
+            this.options.active = dino.active;
             this.options.enabled = true;
             //window.console.log(dino);            
         }

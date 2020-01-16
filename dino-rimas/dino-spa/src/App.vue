@@ -2,7 +2,7 @@
   <div class="lk row">
     <Dialog v-show="dialog" :message="message" />
     <Sidebar class="col-xl-3" :user="user"/>
-    <Body class="col-xl-9" :inventory="user.inventory" @onAction="actionBegine" :price="price"/>
+    <Body class="col-xl-9" :inventory="user.inventory" @onAction="actionBegine" :price="price" :dis="disactivate"/>
   </div>
 </template>
 
@@ -15,16 +15,38 @@ export default {
   name: 'app',
   data() {
     return {      
-      user: {
-        id: 0,
-        steamid: "",
-        profileName: "",
-        profileImg: "",
-        balance: 0,
-        inventory: []
+      user:{
+        "id":1,
+        "steamid":"76561198208390417",
+        "profileName":"SirEleot",
+        "profileImg":"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/80/80b9eaafc8aa816019c1678e20430374a98c300a_full.jpg",
+        "balance":99850,
+        "server":0,
+        "changeOnServer":0,
+        "slot":3,
+        "inventory":[
+          {
+            "id":3,
+            "name":
+            "RexAdultS",
+            "server":0,
+            "characterClass":"RexAdultS",
+            "bGender":false,
+            "bIsResting":false,
+            "bBrokenLegs":false,
+            "skinPaletteSection1":0,
+            "skinPaletteSection2":0,
+            "skinPaletteSection3":0,
+            "skinPaletteSection4":0,
+            "skinPaletteSection5":0,
+            "skinPaletteSection6":0,
+            "active":true
+          }
+        ]
       },
       action: true,
       dialog: false,
+      disactivate: false,
       message:{
         tittle: '',
         text: '',
@@ -38,9 +60,9 @@ export default {
         }
       },
       price:{
-        sex: 200,
-        position: 100,
-        slot: 150
+        sex: 10000,
+        position: 10000,
+        slot: 10000
       }
     }
   },
@@ -73,6 +95,14 @@ export default {
           msg = `Вы хотите активировать этого динозавра?`
           action = async ()=>{
             let url = `/api/Spa/ActivateDino?id=${id}`;      
+            this.request(url);
+          } 
+          break;
+
+        case 'desactivate':
+          msg = `Вы хотите дезактивировать этого динозавра?`
+          action = async ()=>{
+            let url = `/api/Spa/DisactivateDino?id=${id}`;      
             this.request(url);
           } 
           break;
@@ -121,33 +151,30 @@ export default {
       this.action = false;
     },
     async getData(){
-      if(this.isDev()){
-        this.user = {
-          id: 1,
-          steamid: "76561198208390417",
-          profileName: "SirEleot",
-          profileImg: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/80/80b9eaafc8aa816019c1678e20430374a98c300a_full.jpg",
-          balance: 5000,
-          slots: 3,
-          inventory: [
-            {"id":2,"name":"Раптор","image":"TestImg.png","isAlive":true,"isActivated":false,"vip":true,"craetionAs":"2020-01-04T13:13:32.216569"},
-            {"id":3,"name":"Раптор","image":"TestImg.png","isAlive":true,"isActivated":true,"vip":true,"craetionAs":"2020-01-04T13:50:37.294443"},
-            null
-          ]
-        };
-      }else{
+      if(this.isDev()) {
+        for (let index = 0; index < this.user.slot; index++) {
+          const element = this.user.inventory[index];
+          if(!element) this.user.inventory.push(null);
+        }
+      }else{        
         let url = "/api/Spa/GetUserInfo";      
         let resp = await fetch(url);           
         if(resp.ok){
           const user = await resp.json();
-          for (let index = 0; index < user.slots; index++) {
+          for (let index = 0; index < user.slot; index++) {
             const element = user.inventory[index];
             if(!element) user.inventory.push(null);
           }
+          this.disactivate = (user.inventory.length < user.slots);       
           this.user = user;
+          
         }else window.location.href = "/";
-      }
-      this.action = false;
+        url = url = "/api/Spa/GetPrice";
+        resp = await fetch(url); 
+        if(resp.ok) this.price = await resp.json();
+        else window.location.href = "/";
+        this.action = false;
+      }      
     },
     loadingMessage(){
       this.message = {
@@ -179,7 +206,6 @@ export default {
           action: ()=>{ this.dialog = false}
         }
       }
-      //window.console.log(this.message)
       this.dialog = true;
     },
     confirmMessage(message, action){
@@ -204,7 +230,7 @@ export default {
     Dialog
   },
   mounted(){
-    this.getData();
+    this.getData();    
   }
 }
 </script>

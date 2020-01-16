@@ -43,7 +43,11 @@ namespace DinoRimas
                 .AddSteam();
 
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                });
 
             services.Configure<SettingsModel>(Configuration.GetSection("Settings"));
             services.AddDbContext<DinoRimasDbContext>(options =>options.UseNpgsql(Configuration.GetConnectionString("NpgSQL")));
@@ -56,9 +60,11 @@ namespace DinoRimas
             {
                 app.UseDeveloperExceptionPage(); 
                 app.UseBrowserLink();
-                ReloadDB(context, true);
+                ReloadDB(context, false);
             }
-            else {            
+            else
+            {
+                //app.UseDeveloperExceptionPage();
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
                 ReloadDB(context, false);

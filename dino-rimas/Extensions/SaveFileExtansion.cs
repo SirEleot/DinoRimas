@@ -1,5 +1,5 @@
 ﻿using DinoRimas.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,34 +10,38 @@ namespace DinoRimas.Extensions
 {
     public static class SaveFileExtansion
     {
-        public static DinoSaveModel GetSaveFile(this SettingsModel settings, UserModel user)
+        public static DinoModel GetSaveFile(this SettingsModel settings, UserModel user, int server = -1 )
         {
-            var path = settings.GameSaveFolderPath + @"\" + user.Steamid + ".json";
+            var index = server < 0 ? user.Server : server;
+            var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
             if (File.Exists(path))
             {
                 using var r = new StreamReader(path);
-                return JsonConvert.DeserializeObject<DinoSaveModel>(r.ReadToEnd());
+                return JsonSerializer.Deserialize<DinoModel>(r.ReadToEnd()); 
             }
             return null;
         }
 
-        public static bool ExistsSaveFile(this SettingsModel settings, UserModel user)
+        public static bool ExistsSaveFile(this SettingsModel settings, UserModel user, int server = -1)
         {
-            var path = settings.GameSaveFolderPath + @"\" + user.Steamid + ".json";
+            var index = server < 0 ? user.Server : server;
+            var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
             return File.Exists(path);
         }
 
-        public static void DeleteSaveFile(this SettingsModel settings, UserModel user)
+        public static void DeleteSaveFile(this SettingsModel settings, UserModel user, int server = -1)
         {
-            var path = settings.GameSaveFolderPath + @"\" + user.Steamid + ".json";
+            var index = server < 0 ? user.Server : server;
+            var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
             if( File.Exists(path)) File.Delete(path);
         }
 
-        public static void AddSaveFile(this SettingsModel settings, UserModel user, DinoSaveModel save)
+        public static void AddSaveFile(this SettingsModel settings, UserModel user, DinoModel save, int server = -1)
         {
-            var path = settings.GameSaveFolderPath + @"\" + user.Steamid + ".json";
+            var index = server < 0 ? user.Server : server;
+            var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
             using var r = new StreamWriter(path);
-            r.Write(JsonConvert.SerializeObject(save));
+            r.Write(JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true}));
         }
     }
 }

@@ -28,7 +28,7 @@
             {
                 <div class="shop-item mb-5 @GetDinoClass(item.Survival)"  onclick="showModal(@item.Id, '@item?.Name','@Model.Item1?.Balance', @item?.Price, '@(Model.Item1 != null)')">
                     <div class="shop-item-face shop-item-body">
-                        <img src="~/img/Dinos/@item.Img" alt="item" class="shop-item-img">
+                        <img src="~/img/Dinos/@(item.CharacterClass.ToLower()).png" alt="item" class="shop-item-img">
                         <p class="shop-item-name">@item.Name</p>
                         <p class="shop-item-price">@item.Price DC</p>
                     </div>
@@ -63,11 +63,15 @@
                 <div><button class="button">Поддержать проект</button></div>
             </form>
 
+            <div class="online">
+
+            </div>
+
             <!-- VK Widget -->
             <script type="text/javascript" src="https://vk.com/js/api/openapi.js?162"></script>
             <div id="vk_groups" class="widget"></div>
             <script type="text/javascript">
-                VK.Widgets.Group("vk_groups", { mode: 3,  height: '350', width: '250'}, 175893393);
+                VK.Widgets.Group("vk_groups", { mode: 3, height: '350', width: '250' }, 175893393);
             </script>
             <!-- END VK Widget -->
             <iframe src="https://discordapp.com/widget?id=527808271822880768&theme=dark" width="100%" height="350" allowtransparency="true" frameborder="0" class="widget"></iframe>

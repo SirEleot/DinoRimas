@@ -13,7 +13,7 @@ namespace DinoRimas.Models
     }
     public class SettingsModel
     {
-        public string GameSaveFolderPath { get; set; }
+        public List<string> GameSaveFolderPath { get; set; }
         public string SteamApiKey { get; set; }
         public UnitPayModel UnitPay { get; set; }
         public List<string[]> Contacts { get; set; }

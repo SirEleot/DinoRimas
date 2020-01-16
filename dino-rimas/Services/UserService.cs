@@ -1,16 +1,13 @@
 ﻿using DinoRimas.Data;
 using DinoRimas.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System;
 using DinoRimas.Extensions;
 
@@ -40,49 +37,16 @@ namespace DinoRimas.Services
             return await Task.Run(() => GetDinoUser());
         }
 
-        public DinoModel CreateNewDino(DinoShopModel dinoShop, bool active)
+        public DinoModel CreateNewDino(DinoShopModel dinoShop, int server)
         {
             var dino = new DinoModel
             {
-                Image = dinoShop.Img,
-                Name = dinoShop.Name,                
-                IsActivated = active,
-                IsAlive = true,
-                Vip = true,
-                Config = dinoShop.BaseConfig,
+                CharacterClass = dinoShop.CharacterClass,
+                Server = server,
+                Location_Isle_V3 = dinoShop.Location_Isle_V3,
                 CraetionAs = DateTime.Now
             };
             return dino;
-        }
-
-        public DinoModel CreateNewDino(DinoSaveModel config, bool active)
-        {
-            var shop = _context.ShopDinoList.FirstOrDefault(s => s.ClassName == config.CharacterClass);
-            var name = config.CharacterClass;
-            var img = "DefaultDino.png";
-
-            if (shop != null)
-            {
-                name = shop.Name;
-                img = shop.Img;
-            }
-            var dino = new DinoModel
-            {
-                Name = name,
-                IsActivated = active,
-                IsAlive = true,
-                Vip = true,
-                Config = config,
-                Image = img,
-                CraetionAs = DateTime.Now
-            };
-            return dino;
-        }
-
-        public bool UserOnServer(string steamid)
-        {
-            var info = GetSteamInfo(steamid);
-            return (info.gameserverip != null &&  _settings.ServerIps.Any(ip=>ip == info.gameserverip));
         }
 
         private UserModel GetDinoUser()
@@ -90,14 +54,14 @@ namespace DinoRimas.Services
             var steamid = User.Identity.IsAuthenticated ? (User.Claims.First().Value.Split('/').Last()) : null;
             if (steamid == null) return null;
 
-            var dinoUser = _context.User.FirstOrDefault(u => u.Steamid == steamid);
+            var dinoUser = _context.Users.FirstOrDefault(u => u.Steamid == steamid);
             if (dinoUser == null) dinoUser = CreateNewUser(steamid);
             else
             {
                 dinoUser.Inventory = _context.Entry(dinoUser)
                     .Collection(d => d.Inventory)
                     .Query()
-                    .Where(d => d.IsAlive)
+                    .Where(d=>d.Server == dinoUser.Server)
                     .ToList();
             }
             return dinoUser;
@@ -111,17 +75,27 @@ namespace DinoRimas.Services
                 Steamid = steamid,
                 ProfileName = info.personaname,
                 ProfileImg = info.avatarfull,
-                Balance = 100000,
-                Slots = 2,
+                Balance = 0,
+                Server = 0,
                 Inventory = new List<DinoModel>()
             };
-            var save = _settings.GetSaveFile(dinoUser);
-            if (save != null)
+            if (dinoUser.IsAdmin) dinoUser.Balance = 100000;
+            dinoUser.Slots = new List<int>();
+            for (int i = 0; i < _settings.GameSaveFolderPath.Count; i++)
             {
-                var dino = CreateNewDino(save, true);
-                dinoUser.Inventory.Add(dino);
+                dinoUser.Slots.Add(2);
+                var currentDino = _settings.GetSaveFile(dinoUser, i);
+                if (currentDino != null)
+                {
+                    currentDino.Server = i;
+                    currentDino.Active = true;
+                    if (currentDino.Id > 0) currentDino.Id = default;
+                    dinoUser.Inventory.Add(currentDino);
+                }                
+                if (currentDino != null)
+                    _settings.AddSaveFile(dinoUser, currentDino, i);
             }
-            _context.User.Add(dinoUser);
+            _context.Users.Add(dinoUser);
             _context.SaveChanges();
             return dinoUser;
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
  
 namespace DinoRimas.Models
 {
@@ -21,7 +21,7 @@ namespace DinoRimas.Models
         public Dictionary<string, string> result { get; set; }
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this);
+            return JsonSerializer.Serialize(this);
         }
     }
     public class UnitPayError
@@ -33,7 +33,7 @@ namespace DinoRimas.Models
         public Dictionary<string, string> error { get; set; }
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this);
+            return JsonSerializer.Serialize(this);
         }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 using DinoRimas.Models;
-using Newtonsoft.Json;
+using System.Text.Json;
 using DinoRimas.Data;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +32,7 @@ namespace DinoRimas.Controllers.Api
             if (_settings.UnitPay.IpList.Contains(HttpContext.Connection.RemoteIpAddress.ToString()))
             {
                 var query = HttpContext.Request.Query;
-                //if(query["params[test]"] == "1") return Ok(new UnitPayOk("Тестовый запрос получен"));
+                if(query["params[test]"] == "1") return Ok(new UnitPayOk("Тестовый запрос получен"));
                 switch (query["method"])
                 {
                     case "check": return Ok(new UnitPayOk("Сервер готов"));
@@ -42,24 +42,27 @@ namespace DinoRimas.Controllers.Api
                         if(remoteSign == localSign)
                         {
                             var u = UnitPayLogsModel.Create(query, false);
-                            if (_context.UnitPayLogs.Any(up=>up.UId == u.UId && up.Compleeted == true)) return Ok(new UnitPayOk("Платеж с таким ИД уже существует"));
-                            var user = _context.User.Where(usr => usr.Steamid == u.SteamId).SingleOrDefault();
-                            if(user == null)
+                            var log = _context.UnitPayLogs.FirstOrDefault(up => up.UId == u.UId);
+                            if(log == null)
                             {
-                                u.Error = true;
-                                u.ErrorMessage = $"Пользователя с данным steamid нет в базе";
+                                var user = _context.Users.Where(usr => usr.Steamid == u.SteamId).FirstOrDefault();                                
+                                if (user == null)
+                                {
+                                    u.Error = true;
+                                    u.ErrorMessage = $"Пользователя с данным steamid нет в базе";
+                                    u.Compleeted = false;
+                                }
+                                else
+                                {
+                                    user.Balance += (int)u.ProfitSum;
+                                    u.Compleeted = true;
+                                }
+                                _context.UnitPayLogs.Add(u);
+                                _context.SaveChanges();
+                                return Ok(new UnitPayOk("Платеж успешно обработан"));
                             }
-                            else
-                            {
-                                user.Balance += (int)u.ProfitSum;
-                                _context.Update(user);
-                                _context.SaveChangesAsync();
-                                u.Compleeted = true;
-                            }
+                            else return Ok(new UnitPayError("Платеж с таким ИД уже существует"));
 
-                            _context.UnitPayLogs.Add(u);
-                            _context.SaveChanges();
-                            return Ok(new UnitPayOk("Платеж успешно обработан"));
                         }else return Ok(new UnitPayError("Не прошел проверку, пожалуйста сообщите администратору"));
                         
                     case "error":
