@@ -17,8 +17,9 @@ namespace DinoRimas.Models
         public string SteamApiKey { get; set; }
         public UnitPayModel UnitPay { get; set; }
         public List<string[]> Contacts { get; set; }
-        public List<string> ServerIps { get; set; }
+        public string ServerIp { get; set; }
         public PriceModel Price { get; set; }
+        public List<int> QueryPosrts { get; set; }
 
     }
 }

@@ -1,5 +1,9 @@
 <template>
     <div class="lk-body">
+        <div class="server-select row justify-content-center">
+            <div class="button" :class="{'button-active': server == 0}" @click="$emit('onAction', 'serverSelect', 0)">Сервер 1</div>
+            <div class="button" :class="{'button-active': server == 1}" @click="$emit('onAction', 'serverSelect', 1)">Сервер 2</div>
+        </div>
         <div class="lk-options" :class="{'lk-options-enable': options.enabled}">
             <div class="lk-options-map">
                 <img src="/img/map.jpg" alt="map">
@@ -51,7 +55,7 @@
 
 <script>
 export default {
-    props:['inventory', 'price', 'dis'],
+    props:['inventory', 'price', 'dis','server'],
     data() {
         return {
             options:{
@@ -225,5 +229,16 @@ export default {
             left: 43%;
         }
     }
+    .server-select{
+        .button{
+            margin-right: 10px;
+            &-active{
+                background-color: $clr_4;
+                color: $clr_3;
+                font-weight: bold;
+            }
+        }
+    }
+    
 }
 </style>

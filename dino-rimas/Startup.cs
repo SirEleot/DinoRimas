@@ -52,6 +52,7 @@ namespace DinoRimas
             services.Configure<SettingsModel>(Configuration.GetSection("Settings"));
             services.AddDbContext<DinoRimasDbContext>(options =>options.UseNpgsql(Configuration.GetConnectionString("NpgSQL")));
             services.AddUser();
+            services.AddServerQuery();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DinoRimasDbContext context)
@@ -69,7 +70,7 @@ namespace DinoRimas
                 app.UseHsts();
                 ReloadDB(context, false);
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();

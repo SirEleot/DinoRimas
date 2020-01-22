@@ -39,7 +39,8 @@ namespace DinoRimas.Controllers.Api
             else
             {
                 UpdateInfo(user);
-                if(user.Inventory.Count > 0)
+                user.Inventory.RemoveAll(d => d.Server != user.Server);
+                if(user.Inventory.Where(d => d.Server == user.Server).ToList().Count > 0)
                     foreach (var dino in user.Inventory)
                         dino.ResponsePrepair();
                 return Ok(user);
@@ -107,7 +108,7 @@ namespace DinoRimas.Controllers.Api
                         //_context.DinoModels.Update(dino);
                     }
                 }
-                else if (user.Slot > user.Inventory.Count)
+                else if (user.Slot > user.Inventory.Where(d => d.Server == user.Server).ToList().Count)
                 {
                     user.Inventory.Add(currentDino);
                     _context.Users.Update(user);
@@ -137,6 +138,19 @@ namespace DinoRimas.Controllers.Api
 
             _context.SaveChanges();
             return Ok(new Response { Error = false, Message = "Вы успешно добавили дополнительный слот" });
+        }
+
+        [HttpGet("SelectServer")]
+        public async Task<IActionResult> SelectServer()
+        {
+            var user = await _user.GetDinoUserAsync();
+            if (user == null) return NotFound();        
+
+            var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
+            if (_settings.GameSaveFolderPath.Count <= id) return Ok(new Response { Error = true, Message = "Неверно указан Id сервера" });
+            user.Server = id;
+            _context.SaveChanges();
+            return Ok(new Response { Error = false, Message = $"Вы перешли к серверу №{user.Server + 1}" });
         }
 
         [HttpGet("ChangeSex")]
@@ -206,7 +220,7 @@ namespace DinoRimas.Controllers.Api
             var dino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (dino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
             if (!dino.Active) return Ok(new Response { Error = true, Message = "Этот динозавр не активен" });
-            if (user.Inventory.Count >= user.Slot) return Ok(new Response { Error = true, Message = "У вас нет свободных слотов" });
+            if (user.Inventory.Where(d=>d.Server == user.Server).ToList().Count >= user.Slot) return Ok(new Response { Error = true, Message = "У вас нет свободных слотов" });
 
             var currentDino = _settings.GetSaveFile(user);
 
@@ -222,7 +236,7 @@ namespace DinoRimas.Controllers.Api
 
         private void UpdateInfo(UserModel user)
         {
-            var activeDino = user.Inventory.FirstOrDefault(d => d.Active);
+            var activeDino = user.Inventory.FirstOrDefault(d => d.Active && d.Server == user.Server);
             var currentDino = _settings.GetSaveFile(user);
             if(currentDino == null)
             {
@@ -240,14 +254,15 @@ namespace DinoRimas.Controllers.Api
             {
                 if(activeDino == null)
                 {
-                    var dino = user.Inventory.FirstOrDefault(d => d.Id == currentDino.Id);
+                    var dino = user.Inventory.FirstOrDefault(d => d.Id == currentDino.Id && d.Server == user.Server);
                     if (dino == null)
                     {
-                        if (currentDino.CharacterClass.Contains("JuvS") || currentDino.CharacterClass.Contains("HatchS"))
+                        if (currentDino.CharacterClass.Contains("JuvS") || currentDino.CharacterClass.Contains("HatchS") || user.Inventory.Where(d => d.Server == user.Server).ToList().Count == 0)
                         {
-                            user.Inventory.Add(currentDino);
                             if (currentDino.Id > 0) currentDino.Id = default;
                             currentDino.Active = true;
+                            currentDino.Server = user.Server;
+                            user.Inventory.Add(currentDino);
                             //_context.Users.Update(user);
                             _context.SaveChanges();
                             _settings.AddSaveFile(user, currentDino);
@@ -270,15 +285,16 @@ namespace DinoRimas.Controllers.Api
                 {
                     if (currentDino.Id != activeDino.Id)
                     {
-                        var dino = user.Inventory.FirstOrDefault(d => d.Id == currentDino.Id);
+                        var dino = user.Inventory.FirstOrDefault(d => d.Id == currentDino.Id && d.Server == user.Server);
                         if (dino == null)
                         {
                             activeDino.Active = false;
                             currentDino.Active = true;
                             user.Inventory.Remove(activeDino);
                             activeDino.DNA = $"{user.ProfileName}({user.Steamid}) умер";
-                            user.Inventory.Add(currentDino);
                             if (currentDino.Id > 0) currentDino.Id = default;
+                            currentDino.Server = user.Server;
+                            user.Inventory.Add(currentDino);
                             //_context.Users.Update(user);
                             _context.SaveChanges();
                             _settings.AddSaveFile(user, currentDino);

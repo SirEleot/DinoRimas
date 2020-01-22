@@ -61,7 +61,6 @@ namespace DinoRimas.Services
                 dinoUser.Inventory = _context.Entry(dinoUser)
                     .Collection(d => d.Inventory)
                     .Query()
-                    .Where(d=>d.Server == dinoUser.Server)
                     .ToList();
             }
             return dinoUser;
@@ -90,13 +89,15 @@ namespace DinoRimas.Services
                     currentDino.Server = i;
                     currentDino.Active = true;
                     if (currentDino.Id > 0) currentDino.Id = default;
-                    dinoUser.Inventory.Add(currentDino);
-                }                
-                if (currentDino != null)
-                    _settings.AddSaveFile(dinoUser, currentDino, i);
+                    dinoUser.Inventory.Add(currentDino); 
+                }
             }
             _context.Users.Add(dinoUser);
             _context.SaveChanges();
+            foreach (var dino in dinoUser.Inventory)
+            {
+                _settings.AddSaveFile(dinoUser, dino, dino.Server);
+            }
             return dinoUser;
         }
 

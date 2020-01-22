@@ -144,3 +144,17 @@
         }
     }
 }
+
+.online{
+    color: $clr_1;
+    &-tittle{
+        text-align: center;
+        margin: 15px 0;
+    }
+    &-server{
+        margin: 0 0 15px 15px;
+    }
+    &-val{
+        margin-left: 40px;
+    }
+}

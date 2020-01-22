@@ -2,7 +2,7 @@
   <div class="lk row">
     <Dialog v-show="dialog" :message="message" />
     <Sidebar class="col-xl-3" :user="user"/>
-    <Body class="col-xl-9" :inventory="user.inventory" @onAction="actionBegine" :price="price" :dis="disactivate"/>
+    <Body class="col-xl-9" :inventory="user.inventory" @onAction="actionBegine" :price="price" :dis="disactivate" :server="user.server"/>
   </div>
 </template>
 
@@ -107,6 +107,15 @@ export default {
           } 
           break;
 
+        case 'serverSelect':
+          if(this.user.server == id) return;
+          msg = `Перейти к серверу ${id + 1}?`;
+          action = async ()=>{
+            let url = `/api/Spa/SelectServer?id=${id}`;      
+            this.request(url);
+          } 
+          break;
+
         case 'slot':
           if(this.price.slot > this.user.balance) return this.infoMessage("Недостаточно средств");
           msg = `Вы хотите добавить дополнительный слот для динозавра за ${this.price.slot} DC?`
@@ -152,6 +161,9 @@ export default {
     },
     async getData(){
       if(this.isDev()) {
+        this.disactivate = (this.user.inventory.length < this.user.slot); 
+        window.console.log("Check", this.disactivate);
+        
         for (let index = 0; index < this.user.slot; index++) {
           const element = this.user.inventory[index];
           if(!element) this.user.inventory.push(null);
@@ -161,11 +173,11 @@ export default {
         let resp = await fetch(url);           
         if(resp.ok){
           const user = await resp.json();
+          this.disactivate = (user.inventory.length < user.slot); 
           for (let index = 0; index < user.slot; index++) {
             const element = user.inventory[index];
             if(!element) user.inventory.push(null);
-          }
-          this.disactivate = (user.inventory.length < user.slots);       
+          }                
           this.user = user;
           
         }else window.location.href = "/";

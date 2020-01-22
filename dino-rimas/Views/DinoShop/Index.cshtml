@@ -1,12 +1,13 @@
 ﻿@model Tuple<UserModel, List<DinoShopModel>>;
 
+
 @{
     ViewData["Title"] = "Каталог";
     ViewData["Page"] = "Shop";
 }
 
 <div class="modal" id="modal">
-    <span class="modal-dialog" >
+    <span class="modal-dialog">
         <div class="modal-tittle"></div>
         <div class="modal-body"></div>
         <button class="modal-button-1 button" onclick="goToAction()">Купить</button>
@@ -26,16 +27,16 @@
         <div class="row shop justify-content-start">
             @foreach (var item in Model.Item2)
             {
-                <div class="shop-item mb-5 @GetDinoClass(item.Survival)"  onclick="showModal(@item.Id, '@item?.Name','@Model.Item1?.Balance', @item?.Price, '@(Model.Item1 != null)')">
-                    <div class="shop-item-face shop-item-body">
-                        <img src="~/img/Dinos/@(item.CharacterClass.ToLower()).png" alt="item" class="shop-item-img">
-                        <p class="shop-item-name">@item.Name</p>
-                        <p class="shop-item-price">@item.Price DC</p>
-                    </div>
-                    <div class="shop-item-back shop-item-body">
-                        <p class="shop-item-desc">@item.Description</p>
-                    </div>
+            <div class="shop-item mb-5 @GetDinoClass(item.Survival)" onclick="showModal(@item.Id, '@item?.Name','@Model.Item1?.Balance', @item?.Price, '@(Model.Item1 != null)')">
+                <div class="shop-item-face shop-item-body">
+                    <img src="~/img/Dinos/@(item.CharacterClass.ToLower()).png" alt="item" class="shop-item-img">
+                    <p class="shop-item-name">@item.Name</p>
+                    <p class="shop-item-price">@item.Price DC</p>
                 </div>
+                <div class="shop-item-back shop-item-body">
+                    <p class="shop-item-desc">@item.Description</p>
+                </div>
+            </div>
             }
         </div>
     </div>
@@ -43,29 +44,34 @@
         <div class="sidebar">
             @if (Model.Item1 != null)
             {
-                <div class="user widget">
-                    <img src="@Model.Item1.ProfileImg" alt="Steam" class="user-img" />
-                    <p class="user-name">@Model.Item1.ProfileName </p>
-                    <p class="user-id">Id: <span id="steamid" title="Скопировать" onclick="copyIdToBufer(this)">@Model.Item1.Steamid</span> </p>
-                    <p class="user-balance"> @Model.Item1.Balance DC </p>
-                    <a asp-controller="User" asp-action="SignOut" class="button">Выйти</a>
-                </div>
+            <div class="user widget">
+                <img src="@Model.Item1.ProfileImg" alt="Steam" class="user-img" />
+                <p class="user-name">@Model.Item1.ProfileName </p>
+                <p class="user-id">Id: <span id="steamid" title="Скопировать" onclick="copyIdToBufer(this)">@Model.Item1.Steamid</span> </p>
+                <p class="user-balance"> @Model.Item1.Balance DC </p>
+                <a asp-controller="User" asp-action="SignOut" class="button">Выйти</a>
+            </div>
             }
             else
             {
-                <div class="user widget">
-                    <img src="~/img/steam.png" alt="Steam" class="user-img" />
-                    <p class="user-noAuth">Вы не авторизированы</p>
-                    <a asp-controller="User" asp-action="SignIn" class="button">Авторизироваться</a>
-                </div>
+            <div class="user widget">
+                <img src="~/img/steam.png" alt="Steam" class="user-img" />
+                <p class="user-noAuth">Вы не авторизированы</p>
+                <a asp-controller="User" asp-action="SignIn" class="button">Авторизироваться</a>
+            </div>
             }
             <form class="widget donate" asp-controller="User" asp-action="Donate" method="get">
                 <div><button class="button">Поддержать проект</button></div>
             </form>
 
-            <div class="online">
+            @*<div class="online widget">
+                <div class="online-tittle">Наш онлайн</div>
+                @for (int i = 0; i < ServerQuery.Serverinfo.Count; i++)
+                {
+                <div class="online-server"> @($"Сервер №{i + 1}:")<span class="online-val"> @($"{ServerQuery.Serverinfo[i].Players}/{ServerQuery.Serverinfo[i].MaxPlayers}")</span></div>
+                }
 
-            </div>
+            </div>*@
 
             <!-- VK Widget -->
             <script type="text/javascript" src="https://vk.com/js/api/openapi.js?162"></script>

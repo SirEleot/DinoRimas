@@ -16,6 +16,7 @@ namespace DinoRimas.Models
         public string ProfileName { get; set; }
         public string ProfileImg { get; set; }
         public int Balance { get; set; }
+        public bool Banned { get; set; } = false;
         [JsonIgnore]
         public List<int> Slots { get; set; }
         public int Server { get; set; } = 0;

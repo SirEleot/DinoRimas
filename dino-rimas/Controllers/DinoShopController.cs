@@ -7,8 +7,6 @@ using DinoRimas.Data;
 using DinoRimas.Models;
 using DinoRimas.Services;
 using Microsoft.Extensions.Options;
-using DinoRimas.Extensions;
-using System.Text.Json;
 using DinoRimas.Settings;
 
 namespace DinoRimas.Controllers
@@ -28,7 +26,7 @@ namespace DinoRimas.Controllers
         // GET: ShopItems
         public async Task<IActionResult> Index()
         {
-            Tuple<UserModel, List<DinoShopModel>> model = new Tuple<UserModel, List<DinoShopModel>>(await _user.GetDinoUserAsync(), ShopSettings.GetShopList());
+            var model = new Tuple<UserModel, List<DinoShopModel>>(await _user.GetDinoUserAsync(), ShopSettings.GetShopList());
             return View(model);
         }
 
@@ -42,7 +40,7 @@ namespace DinoRimas.Controllers
                 "error"
                 ));
 
-            if (user.Inventory?.Count >= user.Slot) return View("Message", new MessageViewModel(
+            if (user.Inventory?.Where(d => d.Server == user.Server).ToList().Count >= user.Slot) return View("Message", new MessageViewModel(
                "Ошибка",
                "Невозможно завершить операцию!",
                "У вас не хватает слотов для динозавров в инвентаре. Удалите какого-нибудь динозавра или приобретите дополнительный слот.",
