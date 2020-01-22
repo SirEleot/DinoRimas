@@ -1,5 +1,5 @@
 ﻿@model Tuple<UserModel, List<DinoShopModel>>;
-
+@inject ServerQueryService ServerQuery;
 
 @{
     ViewData["Title"] = "Каталог";
@@ -64,14 +64,14 @@
                 <div><button class="button">Поддержать проект</button></div>
             </form>
 
-            @*<div class="online widget">
+            <div class="online widget">
                 <div class="online-tittle">Наш онлайн</div>
                 @for (int i = 0; i < ServerQuery.Serverinfo.Count; i++)
                 {
                 <div class="online-server"> @($"Сервер №{i + 1}:")<span class="online-val"> @($"{ServerQuery.Serverinfo[i].Players}/{ServerQuery.Serverinfo[i].MaxPlayers}")</span></div>
                 }
 
-            </div>*@
+            </div>
 
             <!-- VK Widget -->
             <script type="text/javascript" src="https://vk.com/js/api/openapi.js?162"></script>

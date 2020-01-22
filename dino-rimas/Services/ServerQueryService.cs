@@ -2,12 +2,11 @@
 using DinoRimas.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Okolni.Source.Query;
-using Okolni.Source.Query.Responses;
+using ServerQueryInfo;
+using ServerQueryInfo.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DinoRimas.Services
 {
@@ -27,12 +26,11 @@ namespace DinoRimas.Services
             _lastCheck = DateTime.Now;
             _settings = settings.Value;
             _serverinfo = new List<InfoResponse>();
-            GetInfo();
         }
 
         void GetInfo()
         {
-            _serverinfo.Clear();
+            if(_serverinfo.Count > 0) _serverinfo.Clear();
             foreach (var port in _settings.QueryPosrts)
             {
                 try
@@ -40,12 +38,13 @@ namespace DinoRimas.Services
                     var conn = new QueryConnection();
                     conn.Host = _settings.ServerIp;
                     conn.Port = port;
-                    conn.Connect();
+                    conn.Connect(500);
                     _serverinfo.Add(conn.GetInfo());
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    Serverinfo.Add(null);
+                    //throw new Exception(e.Message);
+                    _serverinfo.Add(null);
                 }
             }
             if(!_serverinfo.Any(s=>s == null)) _lastCheck = DateTime.Now.AddMinutes(2);
