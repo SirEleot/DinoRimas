@@ -41,7 +41,7 @@ namespace DinoRimas.Services
                     conn.Connect(500);
                     _serverinfo.Add(conn.GetInfo());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //throw new Exception(e.Message);
                     _serverinfo.Add(null);

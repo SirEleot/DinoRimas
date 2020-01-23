@@ -48,11 +48,12 @@ namespace DinoRimas
                 {
                     options.JsonSerializerOptions.IgnoreNullValues = true;
                 });
-
-            services.Configure<SettingsModel>(Configuration.GetSection("Settings"));
+            var settings = Configuration.GetSection("Settings");
+            services.Configure<SettingsModel>(settings);
             services.AddDbContext<DinoRimasDbContext>(options =>options.UseNpgsql(Configuration.GetConnectionString("NpgSQL")));
             services.AddUser();
             services.AddServerQuery();
+            FileWatcher.DinoWatcher.Run(settings.Get<SettingsModel>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DinoRimasDbContext context)
@@ -70,14 +71,14 @@ namespace DinoRimas
                 app.UseHsts();
                 ReloadDB(context, false);
             }
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+          
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
