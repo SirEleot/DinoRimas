@@ -53,7 +53,7 @@ namespace DinoRimas
             services.AddDbContext<DinoRimasDbContext>(options =>options.UseNpgsql(Configuration.GetConnectionString("NpgSQL")));
             services.AddUser();
             services.AddServerQuery();
-            FileWatcher.DinoWatcher.Run(settings.Get<SettingsModel>());
+            FileWatcher.DinoWatcher.Run(settings.Get<SettingsModel>(), Configuration.GetConnectionString("NpgSQL"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DinoRimasDbContext context)
