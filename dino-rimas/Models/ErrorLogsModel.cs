@@ -15,6 +15,7 @@ namespace DinoRimas.Models
         public ErrorLogsModel(){}
         public int Id { get; set; }
         public string Message { get; set; }
+        public string Stack { get; set; }
         public DateTime Date { get; set; }
     }
 }

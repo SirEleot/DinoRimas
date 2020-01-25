@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.IO;
 using DinoRimas.Models;
-using Microsoft.Extensions.DependencyInjection;
 using DinoRimas.Data;
 using Microsoft.EntityFrameworkCore;
+using static DinoRimas.Extensions.SaveFileExtansion;
 
 namespace DinoRimas.FileWatcher
 {
@@ -33,7 +32,9 @@ namespace DinoRimas.FileWatcher
         public static void Run(SettingsModel settings, string connString)
         {
             _settings = settings;
-            _option = new DbContextOptionsBuilder().UseNpgsql(connString).Options;
+            var option = new DbContextOptionsBuilder();
+            option.UseNpgsql(connString);
+            _option = option.Options;
             if (_watchers == null) _watchers = new List<DinoWatcher>();
             for (int i = 0; i < _settings.GameSaveFolderPath.Count; i++)
             {
@@ -45,10 +46,12 @@ namespace DinoRimas.FileWatcher
         {
             try
             {
-                (sender as FileSystemWatcher).EnableRaisingEvents = false;
+                _w.EnableRaisingEvents = false;
                 var steamid = e.Name[0..^5];
                 using var context = new DinoRimasDbContext(_option);
-                var user = context.Users.FirstOrDefault(u => u.Steamid == steamid);
+                var user = context.Users
+                    .Include(u => u.Inventory)
+                    .FirstOrDefault(u => u.Steamid == steamid);
                 if(user != null)
                 {
                     var currentDino = user.Inventory.FirstOrDefault(d => d.Active && d.Server == _serverId);
@@ -72,7 +75,7 @@ namespace DinoRimas.FileWatcher
             }
             finally
             {
-                (sender as FileSystemWatcher).EnableRaisingEvents = true;
+                _w.EnableRaisingEvents = true;
             }
         }
 
@@ -80,22 +83,35 @@ namespace DinoRimas.FileWatcher
         {
             try
             {
-                (sender as FileSystemWatcher).EnableRaisingEvents = false;
+                _w.EnableRaisingEvents = false;
                 var steamid = e.Name[0..^5];
                 using var context = new DinoRimasDbContext(_option);
-                var user = context.Users.FirstOrDefault(u => u.Steamid == steamid);
+                var user = context.Users
+                    .Include(u=>u.Inventory)
+                    .FirstOrDefault(u => u.Steamid == steamid);
+                
                 if(user != null)
                 {
+                    var saveFile = GetSaveFile(e.FullPath); 
                     var currentDino = user.Inventory.FirstOrDefault(d => d.Active && d.Server == _serverId);
+                    if (saveFile.Id == default)
+                    {
+                       
+
+                    }
+                    else
+                    {
+                        
+                    }
                 }
             }
             catch (Exception exc)
             {
-                throw new Exception(exc.Message);
+                throw new Exception(exc.StackTrace);
             }
             finally
             {
-                (sender as FileSystemWatcher).EnableRaisingEvents = true;
+                _w.EnableRaisingEvents = true;
             }
         }
 
@@ -103,7 +119,7 @@ namespace DinoRimas.FileWatcher
         {
             try
             {
-                (sender as FileSystemWatcher).EnableRaisingEvents = false;
+                _w.EnableRaisingEvents = false;
 
             }
             catch (Exception exc)
@@ -112,7 +128,7 @@ namespace DinoRimas.FileWatcher
             }
             finally
             {
-                (sender as FileSystemWatcher).EnableRaisingEvents = true;
+                _w.EnableRaisingEvents = true;
             }
         }
     }

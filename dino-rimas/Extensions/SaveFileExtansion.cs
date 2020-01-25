@@ -21,6 +21,15 @@ namespace DinoRimas.Extensions
             }
             return null;
         }
+        public static DinoModel GetSaveFile(string path)
+        {           
+            if (File.Exists(path))
+            {
+                using var r = new StreamReader(path);
+                return JsonSerializer.Deserialize<DinoModel>(r.ReadToEnd());
+            }
+            return null;
+        }
 
         public static bool ExistsSaveFile(this SettingsModel settings, UserModel user, int server = -1)
         {

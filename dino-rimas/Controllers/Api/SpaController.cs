@@ -38,7 +38,7 @@ namespace DinoRimas.Controllers.Api
             if (user == null) return NotFound();
             else
             {
-                UpdateInfo(user);
+                //UpdateInfo(user);
                 user.Inventory.RemoveAll(d => d.Server != user.Server);
                 if(user.Inventory.Where(d => d.Server == user.Server).ToList().Count > 0)
                     foreach (var dino in user.Inventory)
@@ -58,7 +58,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            UpdateInfo(user);
+            //UpdateInfo(user);
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var dino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (dino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
@@ -83,7 +83,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            UpdateInfo(user);
+            //UpdateInfo(user);
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var TargetDino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (TargetDino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });           
@@ -158,7 +158,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            UpdateInfo(user);
+            //UpdateInfo(user);
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var targetDino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (targetDino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
@@ -215,7 +215,7 @@ namespace DinoRimas.Controllers.Api
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
 
-            UpdateInfo(user);
+            //UpdateInfo(user);
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var dino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (dino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
