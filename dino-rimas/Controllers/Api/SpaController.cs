@@ -8,6 +8,7 @@ using DinoRimas.Extensions;
 using DinoRimas.Services;
 using DinoRimas.Models;
 using Microsoft.Extensions.Options;
+using DinoRimas.Settings;
 
 namespace DinoRimas.Controllers.Api
 {
@@ -70,7 +71,7 @@ namespace DinoRimas.Controllers.Api
             user.Balance -= _settings.Price.Position;
 
             dino.Location_Isle_V3 = Settings.ShopSettings.GetPositionById(posId);
-            if (dino.Active) _settings.AddSaveFile(user, dino);
+            if (dino.Active) _settings.UpdateSaveFile(user, dino);
 
             //_context.DinoModels.Update(dino);
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Смена позиции для динозавра {dino.Name} с ID: {dino.Id}"));
@@ -92,7 +93,7 @@ namespace DinoRimas.Controllers.Api
             if (currentDino == null)
             {
                 TargetDino.Active = true;
-                _settings.AddSaveFile(user, TargetDino);
+                _settings.UpdateSaveFile(user, TargetDino);
                 //_context.DinoModels.Update(TargetDino);
             }
             else
@@ -115,7 +116,7 @@ namespace DinoRimas.Controllers.Api
                 }
                 TargetDino.Active = true;
                 //_context.DinoModels.Update(TargetDino);
-                _settings.AddSaveFile(user, TargetDino);
+                _settings.UpdateSaveFile(user, TargetDino);
             }
 
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Активация динозавра {TargetDino.Name} с ID: {TargetDino.Id}"));
@@ -165,15 +166,17 @@ namespace DinoRimas.Controllers.Api
 
             if(targetDino.bGender) return Ok(new Response { Error = true, Message = "Ваш динозавр уже женского пола." });
 
-            if (user.Balance < _settings.Price.Sex) return Ok(new Response { Error = true, Message = "Недостаточно средств" });
-            user.Balance -= _settings.Price.Sex;
+            var shop = ShopSettings.GetShopDinoByClass(targetDino.CharacterClass);
+            var price = (shop != null && !shop.Survival) ? _settings.Price.Sex * 2 : _settings.Price.Sex;
+            if (user.Balance < price) return Ok(new Response { Error = true, Message = "Недостаточно средств" });
+            user.Balance -= price;
 
             var currentDino = _settings.GetSaveFile(user);
             if (currentDino != null && targetDino.Id == currentDino.Id)
             {
                 targetDino.UpdateFrom(currentDino);
                 targetDino.bGender = true;
-                _settings.AddSaveFile(user, targetDino);
+                _settings.UpdateSaveFile(user, targetDino);
                // _context.DinoModels.Update(targetDino);
             }
             else
@@ -265,7 +268,7 @@ namespace DinoRimas.Controllers.Api
                             user.Inventory.Add(currentDino);
                             //_context.Users.Update(user);
                             _context.SaveChanges();
-                            _settings.AddSaveFile(user, currentDino);
+                            _settings.UpdateSaveFile(user, currentDino);
                         }
                         else
                         {
@@ -297,7 +300,7 @@ namespace DinoRimas.Controllers.Api
                             user.Inventory.Add(currentDino);
                             //_context.Users.Update(user);
                             _context.SaveChanges();
-                            _settings.AddSaveFile(user, currentDino);
+                            _settings.UpdateSaveFile(user, currentDino);
                             _context.SaveChanges();
                         }
                         else
@@ -315,7 +318,7 @@ namespace DinoRimas.Controllers.Api
                     {
                         if(currentDino.CharacterClass.Contains("AdultS") && CheckProgress(currentDino.CharacterClass, activeDino.CharacterClass))
                         {
-                            _settings.AddSaveFile(user, activeDino);
+                            _settings.UpdateSaveFile(user, activeDino);
                             user.ChangeOnServer++;
                             //_context.Users.Update(user);
                             _context.SaveChanges();

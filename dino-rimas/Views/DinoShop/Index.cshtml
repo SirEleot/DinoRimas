@@ -31,7 +31,7 @@
                 <div class="shop-item-face shop-item-body">
                     <img src="~/img/Dinos/@(item.CharacterClass.ToLower()).png" alt="item" class="shop-item-img">
                     <p class="shop-item-name">@item.Name</p>
-                    <p class="shop-item-price">@item.Price DC</p>
+                    <p class="shop-item-price">@item.Price <span class="shop-item-@(item.Sale > 0 ?"sale" : "hide")">@item.Sale</span> DC</p>
                 </div>
                 <div class="shop-item-back shop-item-body">
                     <p class="shop-item-desc">@item.Description</p>
@@ -68,7 +68,7 @@
                 <div class="online-tittle">Наш онлайн</div>
                 @for (int i = 0; i < ServerQuery.Serverinfo.Count; i++)
                 {
-                <div class="online-server"> @($"Сервер №{i + 1}:")<span class="online-val"> @($"{ServerQuery.Serverinfo[i].Players}/{ServerQuery.Serverinfo[i].MaxPlayers}")</span></div>
+                <div class="online-server"> @($"Сервер №{i + 1}:")<span class="online-val"> @($"{ServerQuery.Serverinfo[i]?.Players}/{ServerQuery.Serverinfo[i]?.MaxPlayers}")</span></div>
                 }
 
             </div>

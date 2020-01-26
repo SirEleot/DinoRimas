@@ -7,9 +7,10 @@ namespace DinoRimas.Models
 {
     public class ErrorLogsModel
     {
-        public ErrorLogsModel(string message)
+        public ErrorLogsModel(Exception e)
         {
-            Message = message;
+            Message = e.Message;
+            Stack = e.StackTrace;
             Date = DateTime.Now;
         }
         public ErrorLogsModel(){}

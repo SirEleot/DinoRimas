@@ -96,7 +96,7 @@ namespace DinoRimas.Services
             _context.SaveChanges();
             foreach (var dino in dinoUser.Inventory)
             {
-                _settings.AddSaveFile(dinoUser, dino, dino.Server);
+                _settings.UpdateSaveFile(dinoUser, dino, dino.Server);
             }
             return dinoUser;
         }

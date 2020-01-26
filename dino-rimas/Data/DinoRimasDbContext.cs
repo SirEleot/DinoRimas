@@ -15,6 +15,7 @@ namespace DinoRimas.Data
         public DbSet<DinoModel> DinoModels { get; set; }
         public DbSet<UnitPayLogsModel> UnitPayLogs { get; set; }
         public DbSet<ErrorLogsModel> Errors { get; set; }
+        public DbSet<BanLogModel> BanLogs { get; set; }
         public DbSet<DonateShopLogsModel> DonateShopLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

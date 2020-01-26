@@ -71,7 +71,7 @@ namespace DinoRimas.Models
             DNA = null;
             Location_Isle_V3 = null;
             Rotation_Isle_V3 = null;
-            Growth = null;
+            //Growth = null;
             BleedingRate = null;
             Oxygen = null;
             ProgressionTier = null;

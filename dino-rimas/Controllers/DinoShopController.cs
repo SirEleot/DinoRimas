@@ -61,15 +61,15 @@ namespace DinoRimas.Controllers
             //     "В инвентаре не может находится 2 одинаковых динозавра.",
             //     "error"
             //     ));
-
-            if (dinoShop.Price > user.Balance) return View("Message", new MessageViewModel(
+            var price = dinoShop.Sale > 0 ? dinoShop.Sale : dinoShop.Price;
+            if (price > user.Balance) return View("Message", new MessageViewModel(
                 "Ошибка",
                 "Внимание!",
                 "У вас недостаточно Dino Coin на счету",
                 "error"
                 ));
 
-            user.Balance -= dinoShop.Price;
+            user.Balance -= price;
             if (user.Inventory == null) user.Inventory = new List<DinoModel>();
             var dino = _user.CreateNewDino(dinoShop, user.Server);
             user.Inventory.Add(dino);

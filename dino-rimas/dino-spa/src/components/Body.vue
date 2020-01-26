@@ -41,7 +41,9 @@
                     <div class="lk-inventory-img">
                         <img :src="`/img/Dinos/${dino.characterClass.toLowerCase()}.png`" :alt="dino.name">
                     </div>               
-                    <div class="lk-inventory-tittle">{{dino.name}}</div> 
+                    <div class="lk-inventory-tittle">{{dino.name}}</div>
+                    <img class="lk-inventory-sex" :src="dino.bGender ? 'img/female.svg' : 'img/male.svg'" >
+                    <div class="lk-inventory-growth">Рост: {{dino.growth}}</div>
                 </div>
                 <div v-else>
                     <div class="lk-inventory-tittle">Слот</div>
@@ -92,6 +94,7 @@ export default {
     }
     &-inventory{
         margin: 0 25px;
+        color: #000;
         &-add{
             font-size: 150px;
             text-align: center;
@@ -105,6 +108,7 @@ export default {
             border: 1px solid $clr_3;
             padding: 15px;
             margin: 15px;
+            position: relative;
             &:hover{
                 cursor: pointer;
                 transform: scale(1.05);
@@ -122,6 +126,21 @@ export default {
         &-activeted{            
             border: 2px solid $clr_4;
             box-shadow: 0 0 12px 1px $clr_4;
+        }
+        &-sex{
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+        }
+        &-growth{
+            color: $clr_1;
+            position: absolute;
+            font-weight: bold;
+            right: 35px;
+            bottom: 5px;
+
         }
     }
     &-options{            

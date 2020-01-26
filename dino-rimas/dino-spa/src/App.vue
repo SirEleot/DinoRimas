@@ -27,11 +27,11 @@ export default {
         "inventory":[
           {
             "id":3,
-            "name":
-            "RexAdultS",
+            "name": "RexAdultS",
             "server":0,
             "characterClass":"RexAdultS",
-            "bGender":false,
+            "growth": "1.0",
+            "bGender": true,
             "bIsResting":false,
             "bBrokenLegs":false,
             "skinPaletteSection1":0,
@@ -173,6 +173,7 @@ export default {
         let resp = await fetch(url);           
         if(resp.ok){
           const user = await resp.json();
+          if(user.banned) return window.location.href = "/";
           this.disactivate = (user.inventory.length < user.slot); 
           for (let index = 0; index < user.slot; index++) {
             const element = user.inventory[index];
