@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace DinoRimas.Models
 {
@@ -17,11 +18,11 @@ namespace DinoRimas.Models
         public string ProfileImg { get; set; }
         public int Balance { get; set; }
         [JsonIgnore]
-        public DateTime BannedTo { get; set; }
+        public DateTime? BannedTo { get; set; }
         [NotMapped]
         public bool Banned { 
             get {
-                return BannedTo > DateTime.Now;
+                return BannedTo != null && BannedTo > DateTime.Now;
             } 
         }
         [JsonIgnore]

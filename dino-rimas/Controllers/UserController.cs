@@ -26,10 +26,12 @@ namespace DinoRimas.Controllers
         public async Task<IActionResult> Cabinet()
         {
             var user = await _user.GetDinoUserAsync();
+
+            if (user != null && user.IsAdmin) return View();
+            else return View("DoWork");
+           
             if (user.Banned) return View("Banned");
-            return View();
-            //if (user != null && user.IsAdmin ) return View();
-            //else return View("DoWork");
+            return View();           
         }
         [HttpGet]
         public async Task<IActionResult> SignIn()

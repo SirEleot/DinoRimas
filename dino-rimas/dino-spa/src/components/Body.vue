@@ -14,6 +14,17 @@
                 <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 4); options.enabled = false;"></div>
                 <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 5); options.enabled = false;"></div>
                 <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 6); options.enabled = false;"></div>
+
+                
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 7); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 8); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 9); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 10); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 11); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 12); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 13); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 14); options.enabled = false;"></div>
+                <div class="lk-options-pos" @click="$emit('onAction', 'pos', options.id, 15); options.enabled = false;"></div>
             </div>
             <div class="lk-options-buttons">
                 <div class="lk-options-name" >{{options.name}}</div>
@@ -42,7 +53,7 @@
                         <img :src="`/img/Dinos/${dino.characterClass.toLowerCase()}.png`" :alt="dino.name">
                     </div>               
                     <div class="lk-inventory-tittle">{{dino.name}}</div>
-                    <img class="lk-inventory-sex" :src="dino.bGender ? 'img/female.svg' : 'img/male.svg'" >
+                    <img class="lk-inventory-sex" :src="dino.bGender ? '/img/female.svg' : '/img/male.svg'" >
                     <div class="lk-inventory-growth">Рост: {{dino.growth}}</div>
                 </div>
                 <div v-else>
@@ -109,6 +120,7 @@ export default {
             padding: 15px;
             margin: 15px;
             position: relative;
+            color: $clr_1;
             &:hover{
                 cursor: pointer;
                 transform: scale(1.05);
@@ -135,12 +147,10 @@ export default {
             bottom: 5px;
         }
         &-growth{
-            color: $clr_1;
             position: absolute;
             font-weight: bold;
             right: 35px;
             bottom: 5px;
-
         }
     }
     &-options{            
@@ -242,10 +252,48 @@ export default {
         :nth-child(7){                
             top: 32%;
             left: 55%;
-        }
+        }        
         :nth-child(8){                
             top: 8%;
             left: 43%;
+        }
+
+        
+        :nth-child(9){                
+            top: 27%;
+            left: 13%;
+        }
+        :nth-child(10){                
+            top: 28%;
+            left: 28%;
+        }
+        :nth-child(11){                
+            top: 17%;
+            left: 41%;
+        }
+        :nth-child(12){                
+            top: 17%;
+            left: 55%;
+        }
+        :nth-child(13){                
+            top: 60%;
+            left: 58%;
+        }
+        :nth-child(14){                
+            top: 39%;
+            left: 38%;
+        }
+        :nth-child(15){                
+            top: 70%;
+            left: 25%;
+        }
+        :nth-child(16){                
+            top: 54%;
+            left: 34%;
+        }
+        :nth-child(17){                
+            top: 34%;
+            left: 71%;
         }
     }
     .server-select{
