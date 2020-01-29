@@ -17,6 +17,7 @@ namespace DinoRimas.Models
         public string ProfileName { get; set; }
         public string ProfileImg { get; set; }
         public int Balance { get; set; }
+        public DateTime? DeactivaionTime { get; set; }
         [JsonIgnore]
         public DateTime? BannedTo { get; set; }
         [NotMapped]

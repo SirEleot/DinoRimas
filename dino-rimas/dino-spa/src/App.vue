@@ -15,7 +15,7 @@ export default {
   name: 'app',
   data() {
     return {      
-      user:{
+      user:{/*
         "id":1,
         "steamid":"76561198208390417",
         "profileName":"SirEleot",
@@ -43,7 +43,7 @@ export default {
             "active":true
           }
         ]
-      },
+      */},
       action: true,
       dialog: false,
       disactivate: false,
@@ -100,7 +100,7 @@ export default {
           break;
 
         case 'desactivate':
-          msg = `Вы хотите дезактивировать этого динозавра?`
+          msg = `Это действие будет завершено через 6 минут. В течении этого времени нельзя заходить на сервер. Вы хотите деактивировать этого динозавра?`
           action = async ()=>{
             let url = `/api/Spa/DisactivateDino?id=${id}`;      
             this.request(url);

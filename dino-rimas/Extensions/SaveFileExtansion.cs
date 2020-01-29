@@ -15,21 +15,29 @@ namespace DinoRimas.Extensions
         {
             var index = server < 0 ? user.Server : server;
             var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
-            if (File.Exists(path))
-            {
-                using var r = new StreamReader(path);
-                return JsonSerializer.Deserialize<DinoModel>(r.ReadToEnd()); 
-            }
-            return null;
-        }
-        public static DinoModel GetSaveFile(string path)
-        {           
-            if (File.Exists(path))
+            try
             {
                 using var r = new StreamReader(path);
                 return JsonSerializer.Deserialize<DinoModel>(r.ReadToEnd());
             }
-            return null;
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+        public static DinoModel GetSaveFile(string path)
+        {
+            try
+            {
+                using var r = new StreamReader(path);
+                return JsonSerializer.Deserialize<DinoModel>(r.ReadToEnd());
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
         }
 
         public static bool ExistsSaveFile(this SettingsModel settings, UserModel user, int server = -1)
@@ -39,30 +47,65 @@ namespace DinoRimas.Extensions
             return File.Exists(path);
         }
 
-        public static void DeleteSaveFile(this SettingsModel settings, UserModel user, int server = -1)
+        public static bool DeleteSaveFile(this SettingsModel settings, UserModel user, int server = -1)
         {
             var index = server < 0 ? user.Server : server;
-            DinoWatcher.Stop(index);
             var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
-            if( File.Exists(path)) File.Delete(path);
-            DinoWatcher.Start(index);
+            try
+            {
+                if( File.Exists(path)) File.Delete(path);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
+        }
+        public static bool DeleteSaveFile(string path)
+        {
+            try
+            {
+                if (File.Exists(path)) File.Delete(path);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
         }
 
-        public static void UpdateSaveFile(this SettingsModel settings, UserModel user, DinoModel save, int server = -1)
+        public static bool UpdateSaveFile(this SettingsModel settings, UserModel user, DinoModel save, int server = -1)
         {
             var index = server < 0 ? user.Server : server;
-            DinoWatcher.Stop(index);
             var path = settings.GameSaveFolderPath[index] + @"\" + user.Steamid + ".json";
-            using var r = new StreamWriter(path);
-            r.Write(JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true}));
-            DinoWatcher.Start(index);
+            try
+            {
+                using var r = new StreamWriter(path);
+                save.DNA = "Active";
+                r.Write(JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true }));
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }            
         }
-        public static void UpdateSaveFile(string path, DinoModel save, int serverId)
+        public static bool UpdateSaveFile(string path, DinoModel save, int serverId)
         {
-            DinoWatcher.Stop(serverId);
-            using var r = new StreamWriter(path);
-            r.Write(JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true }));
-            DinoWatcher.Start(serverId);
+            try
+            {
+                using var r = new StreamWriter(path);
+                save.DNA = "Active";
+                r.Write(JsonSerializer.Serialize(save, new JsonSerializerOptions { WriteIndented = true }));
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
         }
     }
 }

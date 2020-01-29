@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -16,7 +17,13 @@ namespace DinoRimas.Models
                 return ShopSettings.GetName(CharacterClass);
             }
         }
+        public bool Active { get; set; } = false;
+        public bool Deactivated { get; set; } = false;
+        [JsonIgnore]
         public int Server { get; set; }
+        [JsonIgnore]
+        public DateTime CraetionAs { get; set; } = DateTime.Now;
+
         public string CharacterClass { get; set; }
         public string DNA { get; set; } = "";
         public string Location_Isle_V3 { get; set; }
@@ -43,23 +50,54 @@ namespace DinoRimas.Models
         public int SkinPaletteSection5 { get; set; } = 0;
         public int SkinPaletteSection6 { get; set; } = 0;
         public string SkinPaletteVariation { get; set; } = "6.0";
-        [JsonIgnore]
-        public DateTime CraetionAs { get; set; } = DateTime.Now;
-        public bool Active { get; set; } = false;
 
-        public void UpdateFrom(DinoModel model)
+        public void UpdateFromGame(DinoModel model)
         {
             CharacterClass = model.CharacterClass;
             Location_Isle_V3 = model.Location_Isle_V3;
             Rotation_Isle_V3 = model.Rotation_Isle_V3;
-            Health = model.Health;
-            Hunger = model.Hunger;
             Growth = model.Growth;
+            Hunger = model.Hunger;
             Thirst = model.Thirst;
-            Oxygen = model.Oxygen;
+            Stamina = model.Stamina;
+            Health = model.Health;
             BleedingRate = model.BleedingRate;
+            Oxygen = model.Oxygen;
+            bGender = model.bGender;
             bIsResting = model.bIsResting;
             bBrokenLegs = model.bBrokenLegs;
+        }
+        public void UpdateFromGameFull(DinoModel model)
+        {
+            CharacterClass = model.CharacterClass;
+            DNA = model.DNA;
+            Location_Isle_V3 = model.Location_Isle_V3;
+            Rotation_Isle_V3 = model.Rotation_Isle_V3;
+            Growth = model.Growth;
+            Hunger = model.Hunger;
+            Thirst = model.Thirst;
+            Stamina = model.Stamina;
+            Health = model.Health;
+            BleedingRate = model.BleedingRate;
+            Oxygen = model.Oxygen;
+            bGender = model.bGender;
+            bIsResting = model.bIsResting;
+            bBrokenLegs = model.bBrokenLegs;
+            ProgressionPoints = model.ProgressionPoints;
+            ProgressionTier = model.ProgressionTier;
+            UnlockedCharacters = model.UnlockedCharacters;
+            SkinPaletteSection1 = model.SkinPaletteSection1;
+            SkinPaletteSection2 = model.SkinPaletteSection2;
+            SkinPaletteSection3 = model.SkinPaletteSection3;
+            SkinPaletteSection4 = model.SkinPaletteSection4;
+            SkinPaletteSection5 = model.SkinPaletteSection5;
+            SkinPaletteSection6 = model.SkinPaletteSection6;
+            SkinPaletteVariation = model.SkinPaletteVariation;
+        }
+        public void UpdeteFromDino(DinoModel model)
+        {
+            Id = model.Id;
+            Server = model.Server;
         }
 
         public void ResponsePrepair()
@@ -71,7 +109,6 @@ namespace DinoRimas.Models
             DNA = null;
             Location_Isle_V3 = null;
             Rotation_Isle_V3 = null;
-            //Growth = null;
             BleedingRate = null;
             Oxygen = null;
             ProgressionTier = null;

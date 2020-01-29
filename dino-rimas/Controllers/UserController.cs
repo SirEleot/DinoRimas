@@ -27,12 +27,17 @@ namespace DinoRimas.Controllers
         {
             var user = await _user.GetDinoUserAsync();
 
-            if (user != null && user.IsAdmin) return View();
-            else return View("DoWork");
-           
+            //if (user != null && user.IsAdmin)
+            //{
+            //    if (user.Banned) return View("Banned");
+            //    return View();
+            //}
+            //else return View("DoWork");
+
             if (user.Banned) return View("Banned");
-            return View();           
+            return View();
         }
+
         [HttpGet]
         public async Task<IActionResult> SignIn()
         {

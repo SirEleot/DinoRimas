@@ -54,7 +54,7 @@
                     </div>               
                     <div class="lk-inventory-tittle">{{dino.name}}</div>
                     <img class="lk-inventory-sex" :src="dino.bGender ? '/img/female.svg' : '/img/male.svg'" >
-                    <div class="lk-inventory-growth">Рост: {{dino.growth}}</div>
+                    <div class="lk-inventory-growth">Рост: {{Math.round(dino.growth * 100)}}</div>
                 </div>
                 <div v-else>
                     <div class="lk-inventory-tittle">Слот</div>
