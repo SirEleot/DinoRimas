@@ -82,7 +82,7 @@ namespace DinoRimas.Services
             dinoUser.Slots = new List<int>();
             for (int i = 0; i < _settings.GameSaveFolderPath.Count; i++)
             {
-                dinoUser.Slots.Add(2);
+                dinoUser.Slots.Add(3);
                 var currentDino = _settings.GetSaveFile(dinoUser, i);
                 if (currentDino != null)
                 {

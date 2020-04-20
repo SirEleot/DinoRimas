@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using DinoRimas.FileWatcher;
 
 namespace DinoRimas.Models
 {
@@ -17,13 +18,22 @@ namespace DinoRimas.Models
         public string ProfileName { get; set; }
         public string ProfileImg { get; set; }
         public int Balance { get; set; }
-        public DateTime? DeactivaionTime { get; set; }
+        [NotMapped]
+        public int DeactivaionTime { 
+            get {
+                var time = DinoWatcher.DeactivateTime(Steamid);
+                if (time == null) return -1;
+                var diff = time.Value - DateTime.UtcNow;
+                return diff.Seconds + diff.Minutes * 60; 
+            } 
+        }
         [JsonIgnore]
         public DateTime? BannedTo { get; set; }
         [NotMapped]
         public bool Banned { 
             get {
-                return BannedTo != null && BannedTo > DateTime.Now;
+                if (BannedTo == null) return false;
+                return BannedTo > DateTime.Now;
             } 
         }
         [JsonIgnore]

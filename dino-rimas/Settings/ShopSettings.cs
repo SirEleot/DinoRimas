@@ -44,6 +44,19 @@ namespace DinoRimas.Settings
                 new Vector3(-324573.219f, 151895.031f, -65705.188f),
                 new Vector3(303773.5f, -134582.484f, -24480.203f)
             };
+            //_positions = new List<Vector3>
+            //{
+            //    new Vector3(141841.641f, 43571.215f, -63106.398f),
+            //    new Vector3(2019.969f, 233578.688f, -43503.676f),
+            //    new Vector3(186709.969f, 199657.719f, -56242.723f),
+            //    new Vector3(-156474.188f, 245331.562f, -22110.965f),
+            //    new Vector3(-245081.875f, 138146.094f, -28058.467f),
+            //    new Vector3(-127679.211f, -71919.625f, -28809.916f),
+            //    new Vector3(-86821.18f, -232605.969f, -27385.969f),
+            //    new Vector3(40336.242f, -149336.406f, -47221.109f),
+            //    new Vector3(222678.75f, -139325.172f, -43596.402f),
+            //    new Vector3(-12402.737f, 36912.574f, -59624.219f)
+            //};
             _hasSub = new List<string>
             {
                 "RexAdultS",

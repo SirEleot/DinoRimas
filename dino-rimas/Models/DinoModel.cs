@@ -107,7 +107,7 @@ namespace DinoRimas.Models
             Stamina = null;
             Health = null;
             DNA = null;
-            Location_Isle_V3 = null;
+            //Location_Isle_V3 = null;
             Rotation_Isle_V3 = null;
             BleedingRate = null;
             Oxygen = null;

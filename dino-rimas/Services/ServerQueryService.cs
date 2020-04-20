@@ -14,8 +14,9 @@ namespace DinoRimas.Services
     {
         SettingsModel _settings;
         DateTime _lastCheck;
-        List<InfoResponse> _serverinfo;
-        public List<InfoResponse> Serverinfo {
+        Dictionary<string,InfoResponse> _serverinfo;
+        public int TotalPlayers { get; set; }
+        public Dictionary<string, InfoResponse> Serverinfo {
             get {
                 if (_lastCheck < DateTime.Now) GetInfo();
                 return _serverinfo;
@@ -25,29 +26,32 @@ namespace DinoRimas.Services
         {
             _lastCheck = DateTime.Now;
             _settings = settings.Value;
-            _serverinfo = new List<InfoResponse>();
+            _serverinfo = new Dictionary<string, InfoResponse>();
         }
 
         void GetInfo()
         {
             if(_serverinfo.Count > 0) _serverinfo.Clear();
+            TotalPlayers = 0;
             foreach (var port in _settings.QueryPosrts)
             {
                 try
                 {
                     var conn = new QueryConnection();
                     conn.Host = _settings.ServerIp;
-                    conn.Port = port;
+                    conn.Port = port.Value;
                     conn.Connect(500);
-                    _serverinfo.Add(conn.GetInfo());
+                    var info = conn.GetInfo();
+                    TotalPlayers += info.Players;
+                    _serverinfo.Add(port.Key, info);
                 }
                 catch (Exception)
                 {
                     //throw new Exception(e.Message);
-                    _serverinfo.Add(null);
+                    _serverinfo.Add(port.Key,null);
                 }
             }
-            if(!_serverinfo.Any(s=>s == null)) _lastCheck = DateTime.Now.AddMinutes(2);
+            if(!_serverinfo.Any(s=>s.Value == null)) _lastCheck = DateTime.Now.AddMinutes(2);
         }
     }
 }

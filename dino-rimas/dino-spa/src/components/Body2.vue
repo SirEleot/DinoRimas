@@ -1,9 +1,9 @@
 <template>
     <div class="lk-body">
-        <div class="server-select row justify-content-center">
+        <!-- <div class="server-select row justify-content-center">
             <div class="button" :class="{'button-active': server == 0}" @click="emit('serverSelect', 0)">Сервер 1</div>
             <div class="button" :class="{'button-active': server == 1}" @click="emit('serverSelect', 1)">Сервер 2</div>
-        </div>
+        </div> -->
 
         <div class="row justify-content-around timer" v-show="timerShow">
             <div>Не заходите в игру до окончания таймера:</div><div>{{timerEnd}}</div>
@@ -11,14 +11,15 @@
         
         <div class="lk-options" :class="{'lk-options-enable': options.enabled}">
             <div class="lk-options-map">
-                <img src="/img/map_0.jpg" alt="map">                
+                <img src="/img/map_1.jpg" alt="map">                
                 <div 
                     v-for="(point, index) in points" 
                     :key="index" class="lk-options-pos" 
                     @click="emit('pos', options.id, index);" 
                     :style="{'left' : getLeft(point[0]), 'top': getTop(point[1])}"
-                ></div>
+                ></div>             
                 <div class="currentPos" :style="{'left': options.pos.left, 'top': options.pos.top}"><img src="/img/logo.png" /></div>
+                
             </div>
             <div class="lk-options-buttons">
                 <div class="lk-options-name" >{{options.name}}</div>
@@ -88,25 +89,18 @@ export default {
                 }
             },
             points: [
-                [-462282.156, -54966.359, -73247.383],
-                [-517779.062 ,128792.383 ,-70784.594],
-                [-237888.953 ,363150.5 ,-69253.328],
-                [484007.688 ,195747.594 ,-72550.602],
-                [-21750.398 ,85635.734 ,-68614.961],
-                [46536.098 ,-186975.156 ,-65410.535],
-                [-169665.875 ,-585717.5 ,-72682.609],
-
-                [-588464.75,  -229543.391, -32074.162],
-                [-395896.844, -269987.312, -66561.102],
-                [-191814.516, -373199.594, -40851.805],
-                [13567.566, -404817.188, -42980.176],
-                [107723.289, 283723.094, -40183.656],
-                [-205974.016, -30537.402, -64633.398],
-                [-410652.125, 471226.312, -29178.383],
-                [-324573.219, 151895.031, -65705.188],
-                [303773.5, -134582.484, -24480.203]   
+               [141841.641, 43571.215, -63106.398],
+               [2019.969, 233578.688, -43503.676],
+               [186709.969, 199657.719, -56242.723],
+               [-156474.188, 245331.562, -22110.965],
+               [-245081.875, 138146.094, -28058.467],
+               [-127679.211, -71919.625, -28809.916],
+               [-86821.18, -232605.969, -27385.969],
+               [40336.242, -149336.406, -47221.109],
+               [222678.75, -139325.172, -43596.402],
+               [-12402.737, 36912.574, -59624.219]  
             ],
-            kof:  0.00026,
+            kof:  0.00057,
             t: null,
             timerEnd: "00.00",
             timerShow: false,
@@ -131,7 +125,7 @@ export default {
         getLeft(val){
             // window.console.log(val)
             // return 225 + 0 + 'px';
-            return (225 + val * this.kof) + 'px';
+            return (240 + val * this.kof) + 'px';
         },
         getTop(val){
             //window.console.log(val)
@@ -356,7 +350,6 @@ export default {
             }
         }
     }
-   
     .currentPos{
         position: absolute;
         width: 2.5vh;

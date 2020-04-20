@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - dino-rimas</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
-    <link rel="stylesheet" href="~/css/site.css?v=002" />
+    <link rel="stylesheet" href="~/css/site.css?v=004" />
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body id="body">
@@ -17,19 +17,19 @@
                 <span id="navAncor"></span>
                 <div class="row justify-content-center align-items-center">
                     <div class="nav-button">
-                        <a asp-controller="DinoShop" asp-action="Index" class=@IsActive("Shop")>Список динозавров</a>
+                        <a asp-controller="DinoShop" asp-action="Index" asp-fragment="navAncor" class=@IsActive("Shop")>Список динозавров</a>
                     </div>
                     <div class="nav-button">
-                        <a asp-controller="Info" asp-action="Regulations" class=@IsActive("Regulations")>Правила сервера</a>
+                        <a asp-controller="Info" asp-action="Regulations" asp-fragment="navAncor" class=@IsActive("Regulations")>Правила сервера</a>
                     </div>
                     <div class="nav-button">
-                        <a asp-controller="Info" asp-action="Help" class=@IsActive("Help")>Помощь</a>
+                        <a asp-controller="Info" asp-action="Help" asp-fragment="navAncor" class=@IsActive("Help")>Помощь</a>
                     </div>
                     <div class="nav-button">
-                        <a asp-controller="User" asp-action="Cabinet" class=@IsActive("Lk")>Личный кабинет</a>
+                        <a asp-controller="User" asp-action="Cabinet" asp-fragment="navAncor" class=@IsActive("Lk")>Личный кабинет</a>
                     </div>
                     <div class="nav-button">
-                        <a asp-controller="Info" asp-action="Contacts" class=@IsActive("Contacts")>Контакты</a>
+                        <a asp-controller="Info" asp-action="Contacts" asp-fragment="navAncor" class=@IsActive("Contacts")>Контакты</a>
                     </div>
                 </div>
             </div>

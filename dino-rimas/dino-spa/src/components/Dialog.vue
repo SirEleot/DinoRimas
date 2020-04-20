@@ -33,6 +33,9 @@ export default {
         height: 100%;
         z-index: 500;
         background-color: rgba($clr_2, .8);
+        .info{            
+            max-width: 50%;
+        }
         &-body{            
             background-color: rgba($clr_2, .7);
             padding: 25px;

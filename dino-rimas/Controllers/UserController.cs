@@ -26,7 +26,7 @@ namespace DinoRimas.Controllers
         public async Task<IActionResult> Cabinet()
         {
             var user = await _user.GetDinoUserAsync();
-
+            if (user == null) return Redirect("/User/SignIn");
             //if (user != null && user.IsAdmin)
             //{
             //    if (user.Banned) return View("Banned");

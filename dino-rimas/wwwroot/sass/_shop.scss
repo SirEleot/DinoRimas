@@ -80,30 +80,17 @@
         &-hide{
             display: none;
         }
-        &-sale{
-            &::before{                
-                content: "";
-                display: block;
-                position: absolute;
-                width: 33px;
-                border: 2px solid $clr_3;
-                left: 45px;
-                bottom: 35px;
-                transform: rotate(-20deg);
-            }
+        &-sale{           
             &::after{
                 content: url(../img/discount.svg);
                 width: 25px;
                 height: 25px;
                 position: absolute;
-                top: 10px;
-                right: 10px;
+                top: 2%;
+                right: 2%;
             }
+            font-size: 1.3rem;
         }
-        // &:hover{
-        //     cursor: pointer;
-        //     transform: scale(1.05) translate(-5px );
-        // }
     }
     &-hidden{
         display: none;

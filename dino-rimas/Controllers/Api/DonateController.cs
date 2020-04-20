@@ -81,6 +81,31 @@ namespace DinoRimas.Controllers.Api
             }
         }
 
+        [HttpGet("redirect")]
+        public IActionResult RedirectToPay()
+        {
+            var query = HttpContext.Request.Query;
+            var account = query["account"];
+            var sum = query["sum"];
+            var desc = query["desc"];
+            var currency = query["currency"];
+            var url = $"https://unitpay.ru/pay/{_settings.UnitPay.PublickKey}?account={account}&desc={desc}&sum={sum}&currency={currency}&signature={GetRequestSign(account, currency, desc, sum)}";
+            return Redirect(url);
+        }
+
+        private string GetRequestSign(string account, string currency, string desc, string sum)
+        {
+            var key = account + "{up}" + currency + "{up}"+ desc + "{up}" + sum + "{up}" + _settings.UnitPay.PrivateKey;
+            using var sha = SHA256.Create();
+            byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(key));
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+            return builder.ToString();
+        }
+
         private string GetSign(IQueryCollection q)
         {
             var key = q.Where( k=> k.Key != "params[sign]" && k.Key != "params[signature]").OrderBy(s=>s.Key).Aggregate("", (s,i) => s += i.Value + "{up}");            
