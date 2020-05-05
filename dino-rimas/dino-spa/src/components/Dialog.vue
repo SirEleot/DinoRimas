@@ -33,6 +33,14 @@ export default {
         height: 100%;
         z-index: 500;
         background-color: rgba($clr_2, .8);
+        .timer{
+            font-weight: bold;
+            color: $clr_4;
+            font-size: 1.2rem;
+            div{
+                margin: 0 2vh;
+            }
+        }
         .info{            
             max-width: 50%;
         }

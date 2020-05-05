@@ -26,7 +26,34 @@
     "Price": 200,
     "Sale": 0,
     "Description": "Один из сильнейших вид хищников одаренный природой громадной силой, является вожаком и несет ответственность за свою стаю",
-    "Survival": true
+    "Survival": true,
+    "Stages": {
+      "0": {
+        "Stage": "Hatch",
+        "Ptice": "100б",
+        "Growth": 0.2
+      },
+      "1": {
+        "Stage": "Juv",
+        "Ptice": 100,
+        "Growth": 0.3
+      },
+      "2": {
+        "Stage": "Sub",
+        "Ptice": 100,
+        "Growth": 0.4
+      },
+      "3": {
+        "Stage": "Adult",
+        "Ptice": 100,
+        "Growth": 0.5
+      },
+      "4": {
+        "Stage": "Full",
+        "Ptice": 100,
+        "Growth": 1
+      }
+    }
   }
 
 ]

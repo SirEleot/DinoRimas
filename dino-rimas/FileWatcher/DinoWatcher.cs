@@ -12,17 +12,13 @@ namespace DinoRimas.FileWatcher
 {
     public struct DeactivateData
     {
-        public DeactivateData(string steamid, int minutes, int serverId)
+        public DeactivateData(int minutes, int serverId)
         {
-            Steamid = steamid;
             Expired = DateTime.UtcNow.AddMinutes(minutes);
             ServerId = serverId;
-            Active = true;
         }
-        public string Steamid { get; set; }
         public DateTime Expired { get; set; }
         public int ServerId { get; set; }
-        public bool Active { get; set; }
     }
 
     public class DinoWatcher
@@ -33,7 +29,8 @@ namespace DinoRimas.FileWatcher
         private readonly FileSystemWatcher _w;
         static DbContextOptions _option;
         public static Queue<DinoWatcherData> DinoWatcherQueue;
-        private static Queue<DeactivateData> DeactivateQueue = new Queue<DeactivateData>();
+        private static Dictionary<string, DeactivateData> DeactivationList = new Dictionary<string, DeactivateData>();
+        private static DateTime _lastDeactivationTime = DateTime.UtcNow;
 
 
         private static Thread _thread;
@@ -82,59 +79,70 @@ namespace DinoRimas.FileWatcher
 
         public static void AddToDeactivateQueue(string steamid, int server)
         {
-            DeactivateQueue.Enqueue(new DeactivateData(steamid, _settings.DeactivationTime, server));
+            if (!DeactivationList.ContainsKey(steamid))
+            {
+                DeactivationList.Add(steamid, new DeactivateData( _settings.DeactivationTime, server));
+            }
+            else DeactivateReset(steamid);
+            
         }
 
         private static void CheckDeactivateQueue()
         {
-            if (DeactivateQueue.Count == 0) return;
-            var d =  DeactivateQueue.Peek();
-            if (!d.Active) DeactivateQueue.Dequeue();
-            else if (d.Expired > DateTime.UtcNow) return;
-            else
+            try
             {
+                if (_lastDeactivationTime > DateTime.UtcNow) return;
+                _lastDeactivationTime.AddSeconds(1);
+                if (DeactivationList.Count == 0) return;
                 using var context = new DinoRimasDbContext(_option);
-                var user = context.Users
-                        .Include(u => u.Inventory)
-                        .FirstOrDefault(u => u.Steamid == d.Steamid);
-                if (user != null)
+                var expired = DeactivationList.Where(item => item.Value.Expired < DateTime.UtcNow).ToList();
+
+                foreach (var item in expired)
                 {
-                    var currentDino = user.Inventory.FirstOrDefault(dino => dino.Active && d.ServerId == dino.Server);
-                    if (currentDino != null)
+                    var path = _settings.GameSaveFolderPath[item.Value.ServerId] + @"\" + item.Key + ".json";
+                    if (File.Exists(path)) File.Delete(path);
+                    var user = context.Users
+                       .Include(u => u.Inventory)
+                       .FirstOrDefault(u => u.Steamid == item.Key);
+                    if (user != null)
                     {
-                        currentDino.Active = false;
-                        context.SaveChanges();
-                    }
-                };
-                var path = _settings.GameSaveFolderPath[d.ServerId] + @"\" + d.Steamid + ".json";
-                if (File.Exists(path)) File.Delete(path);
-                DeactivateQueue.Dequeue();
-            }   
+                        var currentDino = user.Inventory.FirstOrDefault(dino => dino.Active && item.Value.ServerId == dino.Server);
+                        if (currentDino != null) currentDino.Active = false;
+                    };
+                    DeactivationList.Remove(item.Key);
+                }
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+           
         }
 
-        public static DeactivateData DeactivateBeginned(string steamid)
+        public static bool DeactivateBeginned(string steamid)
         {
-            return DeactivateQueue.FirstOrDefault(d => d.Steamid == steamid && d.Active);
+            return DeactivationList.Any(d => d.Key == steamid);
         }
 
         public static void DeactivateReset(string steamid)
         {
-            Console.WriteLine("Reset - log: " + steamid);
-            if(DeactivateQueue.Any(d => d.Steamid == steamid && d.Active))
-            {
-                var d = DeactivateQueue.First(d => d.Steamid == steamid && d.Active);
-                d.Active = false;
-            }
+            if(DeactivateBeginned(steamid)) DeactivationList.Remove(steamid);
         }
-        internal static DateTime? DeactivateTime(string steamid)
+        internal static int DeactivateTime(string steamid)
         {
-            if (DeactivateQueue.Any(d => d.Steamid == steamid && d.Active)) return DeactivateQueue.FirstOrDefault(d => d.Steamid == steamid && d.Active).Expired;
-            return null;
+            if (DeactivateBeginned(steamid))
+            {
+                var diff = DeactivationList[steamid].Expired - DateTime.UtcNow;
+                return diff.Seconds + diff.Minutes * 60;
+            }
+            else return -1;
         }
         private static void DinoQueueWatch()
         {   
             while (true)
             {
+                CheckDeactivateQueue();
                 if (DinoWatcherQueue.Count > 0)
                 {
                     var data = DinoWatcherQueue.Peek();
@@ -153,7 +161,6 @@ namespace DinoRimas.FileWatcher
                     }
                 }
                 else Thread.Sleep(50);
-                CheckDeactivateQueue();
             }
         }
         private static bool OnCreate(DinoWatcherData data)
@@ -236,7 +243,6 @@ namespace DinoRimas.FileWatcher
                 //if(user.Banned) return true;
                 var saveFile = GetSaveFile(data.Path);
                 if (saveFile == null) return true;
-                if (saveFile.Id == default) return true;
 
                 var dino = user.Inventory.FirstOrDefault(d => d.Id == saveFile.Id);
                 if (dino == null) return true;
@@ -247,6 +253,8 @@ namespace DinoRimas.FileWatcher
                     dino.Active = true;
                 }
                 dino.UpdateFromGame(saveFile);
+
+                context.Errors.Add(new ErrorLogsModel( new Exception("save")));
                 context.SaveChanges();
                 return true;
             }

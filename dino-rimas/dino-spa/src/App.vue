@@ -1,8 +1,13 @@
 <template>
   <div class="lk row">
-    <Dialog v-show="dialog" :message="message" />
+    <div class="dialog" v-if="user.deactivationTimer > 0">    
+      <div class="timer row justify-content-around">
+          <div>Не заходите в игру до окончания таймера: </div><div>{{timerEnd}}</div>
+      </div>   
+    </div>
+    <Dialog v-show="dialog" :message="message"/>
     <Sidebar class="col-xl-3" :user="user"/>
-    <Body class="col-xl-9" :inventory="user.inventory" @onAction="actionBegine" :price="price" :server="user.server" :timer="user.deactivaionTime" />
+    <Body class="col-xl-9" :inventory="user.inventory" @onAction="actionBegine" :price="price" :server="user.server" />
   </div>
 </template>
 
@@ -14,7 +19,9 @@ import Dialog from './components/Dialog';
 export default {
   name: 'app',
   data() {
-    return {      
+    return {    
+      t: null,
+      timerEnd: "00.00",
       user:{
         "id":1,
         "steamid":"76561198208390417",
@@ -24,7 +31,7 @@ export default {
         "server":1,
         "changeOnServer":0,
         "slot":3,
-        "deactivaionTime": 300,
+        "deactivationTimer": 3,
         "inventory":[
           {
             "id":3,
@@ -96,6 +103,20 @@ export default {
     }
   },
   methods: {
+    tick () {
+        let tmin = Math.floor(this.user.deactivationTimer / 60); 
+        if (tmin < 10)tmin = '0' + tmin;
+        let tsec = this.user.deactivationTimer % 60; 
+        if (tsec < 10)tsec = '0' + tsec;                
+        this.timerEnd = tmin + ':' + tsec;
+        this.user.deactivationTimer -= 1;
+        if(this.user.deactivationTimer < 1){
+          window.clearInterval(this.t);
+          this.user.inventory.forEach(element => {
+            if(element != null)element.active = false;
+          });
+        }
+    },
     isDev(){
       return process.env.NODE_ENV == "development";
     },
@@ -127,7 +148,7 @@ export default {
         case 'desactivate':
           if(!this.disactivate)return this.infoMessage("У вас нет свободного слота. Необходимо удалить какого-то динозавра или приобрести дополнительный слот", false);
           else {
-            msg = `Это действие будет завершено через 6 минут. В течении этого времени нельзя заходить на сервер. Вы хотите деактивировать этого динозавра?`
+            msg = `Деактивация динозавра требует времени. Вы хотите деактивировать этого динозавра?`
             action = async ()=>{
               let url = `/api/Spa/DisactivateDino?id=${id}`;      
               this.request(url);
@@ -172,7 +193,7 @@ export default {
           break;
 
         case 'delete':
-          msg = `Если данный динозавр является активным - действие будет завершено через 6 минут. Желаете удалить навсегда этого диназавра?`
+          msg = `Желаете удалить навсегда этого диназавра?`
           action = async ()=>{
             let url = `/api/Spa/DeleteDino?id=${id}`;      
             this.request(url);
@@ -189,7 +210,7 @@ export default {
       if(resp.ok) {
         let result = await resp.json();
         this.infoMessage(result.message, result.error);  
-        if(!result.error) this.getData();
+        if(result.user) this.updateUser(result.user);
       } else {
         this.infoMessage('Неверный ответ от сервера');
       }      
@@ -200,31 +221,33 @@ export default {
         this.disactivate = (this.user.inventory.length < this.user.slot); 
         //window.console.log("Check", this.disactivate);
         
-        for (let index = 0; index < this.user.slot; index++) {
-          const element = this.user.inventory[index];
-          if(!element) this.user.inventory.push(null);
-        }
-        this.action = false;
+        this.updateUser(this.user);
       }else{        
         let url = "/api/Spa/GetUserInfo";      
         let resp = await fetch(url);           
         if(resp.ok){
           const user = await resp.json();
-          if(user.banned) return window.location.href = "/";
-          this.disactivate = (user.inventory.length < user.slot); 
-          for (let index = 0; index < user.slot; index++) {
-            const element = user.inventory[index];
-            if(!element) user.inventory.push(null);
-          }                
-          this.user = user;        
+          //if(user.banned) return window.location.href = "/";
+          this.updateUser(user);
         //window.console.log("Check", JSON.stringify(this.user));
         }else window.location.href = "/";
-        url = url = "/api/Spa/GetPrice";
+        url = "/api/Spa/GetPrice";
         resp = await fetch(url); 
         if(resp.ok) this.price = await resp.json();
         else window.location.href = "/";
         this.action = false;
       }      
+    },
+    updateUser(user){
+      this.disactivate = (user.inventory.length < user.slot); 
+      for (let index = 0; index < user.slot; index++) {
+        const element = user.inventory[index];
+        if(!element) user.inventory.push(null);
+      }                
+      this.user = user;
+      if(this.user.deactivationTimer > 0) {
+        this.t = setInterval(() => { this.tick() }, 1000);
+      }else this.timerEnd = "00.00";
     },
     loadingMessage(){
       this.message = {

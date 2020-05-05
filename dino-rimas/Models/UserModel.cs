@@ -19,12 +19,9 @@ namespace DinoRimas.Models
         public string ProfileImg { get; set; }
         public int Balance { get; set; }
         [NotMapped]
-        public int DeactivaionTime { 
+        public int DeactivationTimer { 
             get {
-                var time = DinoWatcher.DeactivateTime(Steamid);
-                if (time == null) return -1;
-                var diff = time.Value - DateTime.UtcNow;
-                return diff.Seconds + diff.Minutes * 60; 
+                return DinoWatcher.DeactivateTime(Steamid); 
             } 
         }
         [JsonIgnore]

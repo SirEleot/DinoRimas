@@ -18,6 +18,7 @@ namespace DinoRimas.Controllers.Api
     {
         public bool Error { get; set; }
         public string Message { get; set; }
+        public UserModel User { get; set; } = null;
     }
 
 
@@ -45,8 +46,17 @@ namespace DinoRimas.Controllers.Api
                 if(user.Inventory.Count > 0)
                     foreach (var dino in user.Inventory)
                         dino.ResponsePrepair();
-                return Ok(user);
+                return Ok(UpdateInventory(user));
             }
+        }
+
+        private UserModel UpdateInventory(UserModel user)
+        {
+            user.Inventory.RemoveAll(d => d.Server != user.Server);
+            if (user.Inventory.Count > 0)
+                foreach (var dino in user.Inventory)
+                    dino.ResponsePrepair();
+            return user;
         }
 
         [HttpGet("GetPrice")]
@@ -60,7 +70,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            if (DinoWatcher.DeactivateBeginned(user.Steamid).Active) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
+            if (DinoWatcher.DeactivateBeginned(user.Steamid)) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var dino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (dino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
@@ -84,7 +94,7 @@ namespace DinoRimas.Controllers.Api
 
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Смена позиции для динозавра {dino.Name} с ID: {dino.Id}"));
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = "Вы успешно телепортировали вашего динозавра" });
+            return Ok(new Response { Error = false, Message = "Вы успешно телепортировали вашего динозавра", User = UpdateInventory(user) });
         }
 
         [HttpGet("ActivateDino")]
@@ -92,7 +102,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            if (DinoWatcher.DeactivateBeginned(user.Steamid).Active) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
+            if (DinoWatcher.DeactivateBeginned(user.Steamid)) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var TargetDino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (TargetDino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
@@ -110,7 +120,7 @@ namespace DinoRimas.Controllers.Api
                 await Task.Delay(100);
             };           
             
-            return Ok(new Response { Error = false, Message = "Вы успешно активировали динозавра" });
+            return Ok(new Response { Error = false, Message = "Вы успешно активировали динозавра", User = UpdateInventory(user) });
         }
 
         [HttpGet("AddSlot")]
@@ -126,7 +136,7 @@ namespace DinoRimas.Controllers.Api
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, "Добавление слота инвентаря"));
 
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = "Вы успешно добавили дополнительный слот" });
+            return Ok(new Response { Error = false, Message = "Вы успешно добавили дополнительный слот", User = UpdateInventory(user) });
         }
 
         [HttpGet("SelectServer")]
@@ -139,7 +149,7 @@ namespace DinoRimas.Controllers.Api
             if (_settings.GameSaveFolderPath.Count <= id) return Ok(new Response { Error = true, Message = "Неверно указан Id сервера" });
             user.Server = id;
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = $"Вы перешли к серверу №{user.Server + 1}" });
+            return Ok(new Response { Error = false, Message = $"Вы перешли к серверу №{user.Server + 1}", User = UpdateInventory(user) });
         }
 
         [HttpGet("ChangeSex")]
@@ -147,7 +157,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            if (DinoWatcher.DeactivateBeginned(user.Steamid).Active) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
+            if (DinoWatcher.DeactivateBeginned(user.Steamid)) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var targetDino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (targetDino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
@@ -176,7 +186,7 @@ namespace DinoRimas.Controllers.Api
             }            
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Смена пола для динозавра {targetDino.Name} с ID: {targetDino.Id}"));
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = "Вы успешно сменили пол динозавра" });
+            return Ok(new Response { Error = false, Message = "Вы успешно сменили пол динозавра", User = UpdateInventory(user) });
         }
 
         List<string> _hasSub = new List<string>
@@ -192,7 +202,7 @@ namespace DinoRimas.Controllers.Api
 
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            if (DinoWatcher.DeactivateBeginned(user.Steamid).Active) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
+            if (DinoWatcher.DeactivateBeginned(user.Steamid)) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var targetDino = user.Inventory.SingleOrDefault(d => d.Id == id);
             if (targetDino == null) return Ok(new Response { Error = true, Message = "Динозавр с таким Id не найден" });
@@ -209,7 +219,7 @@ namespace DinoRimas.Controllers.Api
 
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Grow dino {targetDino.Name} с ID: {targetDino.Id}"));
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = "Вы успешно повысили динозавра динозавра" });
+            return Ok(new Response { Error = false, Message = "Вы успешно повысили динозавра", User = UpdateInventory(user) });
         }
 
         private int GetStageFromClass(string className)
@@ -231,7 +241,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            if (DinoWatcher.DeactivateBeginned(user.Steamid).Active) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
+            if (DinoWatcher.DeactivateBeginned(user.Steamid)) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
 
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var dino = user.Inventory.SingleOrDefault(d => d.Id == id);
@@ -243,7 +253,7 @@ namespace DinoRimas.Controllers.Api
 
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Удаление динозавра {dino.Name} с ID: {dino.Id}"));
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = "Вы удалили вашего динозавра и освободили слот" });
+            return Ok(new Response { Error = false, Message = "Вы удалили вашего динозавра и освободили слот", User = UpdateInventory(user) });
         }
 
         [HttpGet("DisactivateDino")]
@@ -251,7 +261,7 @@ namespace DinoRimas.Controllers.Api
         {
             var user = await _user.GetDinoUserAsync();
             if (user == null) return NotFound();
-            if (DinoWatcher.DeactivateBeginned(user.Steamid).Active) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
+            if (DinoWatcher.DeactivateBeginned(user.Steamid)) return Ok(new Response { Error = true, Message = "Один из динозавров находится в процессе дактивации или удаления. Нужно немного подождать." });
 
             var id = Convert.ToInt32(HttpContext.Request.Query["id"]);
             var dino = user.Inventory.SingleOrDefault(d => d.Id == id);
@@ -267,16 +277,7 @@ namespace DinoRimas.Controllers.Api
 
             _context.DonateShopLogs.Add(new DonateShopLogsModel(user, $"Запрос на деактивацию динозавра {dino.Name} с ID: {dino.Id}"));
             _context.SaveChanges();
-            return Ok(new Response { Error = false, Message = $"Для завершения деактивации данного динозавра необходимо подождать {_settings.DeactivationTime} мин. Не заходите в игру до оконяания таймера" });
-        }
-       
-
-        private bool CheckProgress(string current, string active)
-        {
-            if (current == active) return false;
-            var _previouse = ShopSettings.hasSub(current) ? "SubS" : "JuvS";
-            var className = current[0..^6];
-            return (className + _previouse != active);
+            return Ok(new Response { Error = false, Message = $"Для завершения деактивации данного динозавра необходимо подождать {_settings.DeactivationTime} мин. Не заходите в игру до оконяания таймера", User = UpdateInventory(user) });
         }
        
     }

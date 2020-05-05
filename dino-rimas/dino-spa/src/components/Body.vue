@@ -5,9 +5,7 @@
             <div class="button" :class="{'button-active': server == 1}" @click="emit('serverSelect', 1)">Сервер 2</div>
         </div>
 
-        <div class="row justify-content-around timer" v-show="timerShow">
-            <div>Не заходите в игру до окончания таймера:</div><div>{{timerEnd}}</div>
-        </div>
+      
         
         <div class="lk-options" :class="{'lk-options-enable': options.enabled}">
             <div class="lk-options-map">
@@ -73,7 +71,7 @@
 
 <script>
 export default {
-    props:['inventory', 'price','server', 'timer'],
+    props:['inventory', 'price','server'],
     data() {
         return {
             options:{
@@ -107,9 +105,6 @@ export default {
                 [303773.5, -134582.484, -24480.203]   
             ],
             kof:  0.00026,
-            t: null,
-            timerEnd: "00.00",
-            timerShow: false,
             stadies:{
                 1: "Hatch",                    
                 2: "Juv",                    
@@ -144,35 +139,13 @@ export default {
             this.options.pos.top = this.getTop(parseFloat(temp[1].split("=")[1]));
             //window.console.log(JSON.stringify(pos));
         },
-        time () {
-            if (this.timer > 0) {
-                let tmin = Math.floor(this.timer / 60); 
-                if (tmin < 10)tmin = '0' + tmin;
-                let tsec = this.timer % 60; 
-                if (tsec < 10)tsec = '0' + tsec;                
-                this.timerEnd = tmin + ':' + tsec;
-                this.timerShow = true;
-                this.timer -= 1;
-            }else  {
-                this.timerShow = false;
-                clearInterval(this.t);
-            }
-        },
         emit(action, data_1, data_2){
-            if(this.timerShow && action != 'serverSelect') this.$emit('onAction', 'timer');
-            else this.$emit('onAction', action, data_1, data_2);
+            this.$emit('onAction', action, data_1, data_2);
             this.options.enabled = false;
         },
         stadyActive(className){
             return this.options.className.indexOf(className) != -1;
         }
-    },
-    mounted(){
-        //window.console.log(this.timer);
-        if(this.timer) this.t = setInterval(() => { this.time() }, 1000);
-    },
-    beforeDestroy () {
-        clearInterval(this.t);
     }
 }
 </script>
@@ -184,13 +157,6 @@ export default {
         color: $clr_1;
         padding: 25px;
         overflow: hidden;        
-    }
-    .timer{
-        margin: 15px 0;
-        font-weight: bold;
-        color: $clr_4;
-        font-size: 1.2rem;
-      
     }
     &-inventory{
         margin: 0 25px;
@@ -362,9 +328,6 @@ export default {
         width: 2.5vh;
         height: 2.5vh;
         perspective: 300px;
-        //background-color: #000;
-        //border-radius: 50%;
-        //border: 1px solid #fff;
         img{
             animation-duration: .8s;
             animation-name: logo-rotate;
